@@ -8,7 +8,7 @@ import java.util.Arrays;
  * Array based storage for Resumes
  */
 public class ArrayStorage {
-    private final int STORAGE_FULL_SIZE = 10_000;
+    private final static int STORAGE_FULL_SIZE = 10_000;
     private int size;
     private Resume[] storage = new Resume[STORAGE_FULL_SIZE];
 
@@ -18,7 +18,7 @@ public class ArrayStorage {
     }
 
     public void update(Resume resume) {
-        int index = findResumeIndex(resume.getUuid());
+        int index = findIndex(resume.getUuid());
         if (index != -1) {
             storage[index] = resume;
         }
@@ -29,8 +29,8 @@ public class ArrayStorage {
             System.out.println("Storage is full!!");
             return;
         }
-        if (findResumeIndex(r.getUuid()) != -1) {
-            System.out.println("com.dimko.webapp.model.Resume wit uuid = " + r.getUuid() + " is already exist");
+        if (findIndex(r.getUuid()) != -1) {
+            System.out.println("Resume wit uuid = " + r.getUuid() + " is already exist");
             return;
         }
         storage[size] = r;
@@ -38,12 +38,12 @@ public class ArrayStorage {
     }
 
     public Resume get(String uuid) {
-        int index = findResumeIndex(uuid);
+        int index = findIndex(uuid);
         return (index != -1) ? storage[index] : null;
     }
 
     public void delete(String uuid) {
-        int index = findResumeIndex(uuid);
+        int index = findIndex(uuid);
         if (index != -1) {
             storage[index] = storage[size - 1];
             storage[size - 1] = null;
@@ -62,13 +62,13 @@ public class ArrayStorage {
         return size;
     }
 
-    private int findResumeIndex(String uuid) {
+    private int findIndex(String uuid) {
         for (int i = 0; i < size; i++) {
             if (uuid.equals(storage[i].getUuid())) {
                 return i;
             }
         }
-        System.out.println("com.dimko.webapp.model.Resume with uuid = " + uuid + " not found!");
+        System.out.println("Resume with uuid = " + uuid + " not found!");
         return -1;
     }
 }

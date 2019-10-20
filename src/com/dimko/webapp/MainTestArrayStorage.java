@@ -1,3 +1,5 @@
+package com.dimko.webapp;
+
 import com.dimko.webapp.model.Resume;
 import com.dimko.webapp.storage.ArrayStorage;
 
