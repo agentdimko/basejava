@@ -1,18 +1,19 @@
-package com.dimko.webapp;
+package ru.javawebinar.basejava;
 
-import com.dimko.webapp.model.Resume;
-import com.dimko.webapp.storage.ArrayStorage;
+import ru.javawebinar.basejava.model.Resume;
+import ru.javawebinar.basejava.storage.ArrayStorage;
+import ru.javawebinar.basejava.storage.Storage;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
- * Interactive test for com.dimko.webapp.storage.ArrayStorage implementation
+ * Interactive test for ArrayStorage implementation
  * (just run, no need to understand)
  */
 public class MainArray {
-    private final static ArrayStorage ARRAY_STORAGE = new ArrayStorage();
+    private final static Storage ARRAY_STORAGE = new ArrayStorage();
 
     public static void main(String[] args) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
