@@ -2,55 +2,31 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.model.Resume;
 
-import java.util.Arrays;
-
 /**
  * Array based storage for Resumes
  */
-public class ArrayStorage extends AbstractArrayStorage{
-    private final static int STORAGE_LIMIT = 10_000;
-    private int size;
-    private Resume[] storage = new Resume[STORAGE_LIMIT];
-
-    public void clear() {
-        Arrays.fill(storage, 0, size, null);
-        size = 0;
-    }
+public class ArrayStorage extends AbstractArrayStorage {
 
     public void update(Resume resume) {
         int index = getIndex(resume.getUuid());
-        if (index != -1) {
+        if (index == -1) {
+            System.out.println("Unable to update. Resume with uuid " + resume.getUuid() + " not found");
+        } else {
             storage[index] = resume;
         }
     }
 
-    public void save(Resume r) {
+    public void save(Resume resume) {
         if (size == STORAGE_LIMIT) {
-            System.out.println("Storage is full!!");
+            System.out.println("Unabel to save. Storage is full!!");
             return;
         }
-        if (getIndex(r.getUuid()) != -1) {
-            System.out.println("Resume wit uuid = " + r.getUuid() + " is already exist");
-            return;
+        if (getIndex(resume.getUuid()) == -1) {
+            storage[size] = resume;
+            size++;
+        } else {
+            System.out.println("Unabel to save. Resume wit uuid " + resume.getUuid() + " is already exist");
         }
-        storage[size] = r;
-        size++;
-    }
-
-    public void delete(String uuid) {
-        int index = getIndex(uuid);
-        if (index != -1) {
-            storage[index] = storage[size - 1];
-            storage[size - 1] = null;
-            size--;
-        }
-    }
-
-    /**
-     * @return array, contains only Resumes in storage (without null)
-     */
-    public Resume[] getAll() {
-        return Arrays.copyOf(storage, size);
     }
 
     protected int getIndex(String uuid) {
@@ -59,7 +35,6 @@ public class ArrayStorage extends AbstractArrayStorage{
                 return i;
             }
         }
-        System.out.println("Resume with uuid = " + uuid + " not found!");
         return -1;
     }
 }
