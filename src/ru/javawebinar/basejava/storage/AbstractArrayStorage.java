@@ -9,15 +9,34 @@ public abstract class AbstractArrayStorage implements Storage {
     protected int size = 0;
     protected Resume[] storage = new Resume[STORAGE_LIMIT];
 
+
+    @Override
+    public void save(Resume resume) {
+        if (size == STORAGE_LIMIT) {
+            System.out.println("Unable to save. Storage is full!!");
+            return;
+        }
+        int index = getIndex(resume.getUuid());
+        if(index > 0) {
+            System.out.println("Unable to save. Resume with uuid " + resume.getUuid() + " is already exist");
+            return;
+        }
+        saveToConcreteStorage(resume);
+    }
+
+    @Override
     public void clear() {
         Arrays.fill(storage, 0, size, null);
         size = 0;
     }
 
+    @Override
     public int size() {
         return size;
     }
 
+
+    @Override
     public Resume get(String uuid) {
         int index = getIndex(uuid);
         if (index < 0) {
@@ -27,6 +46,7 @@ public abstract class AbstractArrayStorage implements Storage {
         return storage[index];
     }
 
+    @Override
     public Resume[] getAll() {
         return Arrays.copyOf(storage, size);
     }
@@ -42,4 +62,5 @@ public abstract class AbstractArrayStorage implements Storage {
     }
 
     protected abstract int getIndex(String uuid);
+    protected abstract void saveToConcreteStorage(Resume resume);
 }
