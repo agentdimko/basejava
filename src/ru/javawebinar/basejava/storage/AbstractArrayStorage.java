@@ -11,17 +11,29 @@ public abstract class AbstractArrayStorage implements Storage {
 
 
     @Override
+    public void update(Resume resume) {
+        int index = getIndex(resume.getUuid());
+        if (index < 0) {
+            System.out.println("Unable to update. Resume with uuid " + resume.getUuid() + " not found");
+        } else {
+            storage[index] = resume;
+        }
+    }
+
+    @Override
     public void save(Resume resume) {
         if (size == STORAGE_LIMIT) {
             System.out.println("Unable to save. Storage is full!!");
             return;
         }
         int index = getIndex(resume.getUuid());
-        if(index > 0) {
+        if (index < 0) {
+            saveElement(resume, index);
+            size++;
+        } else {
             System.out.println("Unable to save. Resume with uuid " + resume.getUuid() + " is already exist");
-            return;
         }
-        saveToConcreteStorage(resume);
+
     }
 
     @Override
@@ -38,12 +50,14 @@ public abstract class AbstractArrayStorage implements Storage {
 
     @Override
     public Resume get(String uuid) {
+        Resume resume = null;
         int index = getIndex(uuid);
         if (index < 0) {
             System.out.println("Resume " + uuid + " not exist");
-            return null;
+        } else {
+            resume = storage[index];
         }
-        return storage[index];
+        return resume;
     }
 
     @Override
@@ -53,14 +67,17 @@ public abstract class AbstractArrayStorage implements Storage {
 
     public void delete(String uuid) {
         int index = getIndex(uuid);
-        if (index < 0) {
-            System.out.println("Unable to delete. Resume with uuid " + uuid + " not found.");
-        } else {
-            System.arraycopy(storage, index + 1, storage, index, size - 1 - index);
+        if (index >= 0) {
+            deleteElement(index);
             size--;
+        } else {
+            System.out.println("Unable to delete. Resume with uuid " + uuid + " not found.");
         }
     }
 
     protected abstract int getIndex(String uuid);
-    protected abstract void saveToConcreteStorage(Resume resume);
+
+    protected abstract void saveElement(Resume resume, int index);
+
+    protected abstract void deleteElement(int index);
 }
