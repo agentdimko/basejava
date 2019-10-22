@@ -50,14 +50,13 @@ public abstract class AbstractArrayStorage implements Storage {
 
     @Override
     public Resume get(String uuid) {
-        Resume resume = null;
         int index = getIndex(uuid);
         if (index < 0) {
             System.out.println("Resume " + uuid + " not exist");
+            return null;
         } else {
-            resume = storage[index];
+            return storage[index];
         }
-        return resume;
     }
 
     @Override
@@ -65,10 +64,12 @@ public abstract class AbstractArrayStorage implements Storage {
         return Arrays.copyOf(storage, size);
     }
 
+    @Override
     public void delete(String uuid) {
         int index = getIndex(uuid);
         if (index >= 0) {
             deleteElement(index);
+            storage[size - 1] = null;
             size--;
         } else {
             System.out.println("Unable to delete. Resume with uuid " + uuid + " not found.");
