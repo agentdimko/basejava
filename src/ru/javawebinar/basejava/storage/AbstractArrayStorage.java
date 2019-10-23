@@ -12,7 +12,6 @@ public abstract class AbstractArrayStorage implements Storage {
     protected int size = 0;
     protected Resume[] storage = new Resume[STORAGE_LIMIT];
 
-
     @Override
     public void update(Resume resume) {
         int index = getIndex(resume.getUuid());
