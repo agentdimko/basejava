@@ -24,10 +24,6 @@ public class AbstractArrayStorageTest {
         this.storage = storage;
     }
 
-    public Storage getStorage() {
-        return storage;
-    }
-
     @Before
     public void setup() {
         storage.clear();
