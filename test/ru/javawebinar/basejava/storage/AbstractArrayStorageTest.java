@@ -11,16 +11,16 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 
-public class AbstractArrayStorageTest {
-    private Storage storage = new ArrayStorage();
+public abstract class AbstractArrayStorageTest {
     private static final String UUID_1 = "uuid1";
     private static final String UUID_2 = "uuid2";
     private static final String UUID_3 = "uuid3";
+    private static final String DUMMY = "dummy";
+    private static final Resume dummyResume = new Resume(DUMMY);
+    private static final Resume existResume = new Resume(UUID_1);
+    private Storage storage;
 
-    public AbstractArrayStorageTest() {
-    }
-
-    protected AbstractArrayStorageTest(Storage storage) {
+    public AbstractArrayStorageTest(Storage storage) {
         this.storage = storage;
     }
 
@@ -33,22 +33,20 @@ public class AbstractArrayStorageTest {
     }
 
     @Test
-    public void update() {
-        Resume resume = storage.get(UUID_1);
+    public void updateExist() {
         storage.update(new Resume(UUID_1));
-        assertEquals(resume, storage.get(UUID_1));
+        assertEquals(existResume, storage.get(UUID_1));
     }
 
     @Test(expected = NotExistStorageException.class)
     public void updateNotExist() {
-        storage.update(new Resume("dummy"));
+        storage.update(dummyResume);
     }
 
     @Test
     public void save() {
-        Resume resume = new Resume("dummy");
-        storage.save(new Resume("dummy"));
-        assertEquals(resume, storage.get("dummy"));
+        storage.save(new Resume(DUMMY));
+        assertEquals(dummyResume, storage.get(DUMMY));
     }
 
 
@@ -58,12 +56,12 @@ public class AbstractArrayStorageTest {
         for (int i = 0; i < AbstractArrayStorage.STORAGE_LIMIT; i++) {
             storage.save(new Resume("uuid" + (i + 1)));
         }
-        storage.save(new Resume("dummy"));
+        storage.save(dummyResume);
     }
 
     @Test(expected = ExistStorageException.class)
     public void saveAlreadyExist() {
-        storage.save(new Resume(UUID_2));
+        storage.save(existResume);
     }
 
 
@@ -80,13 +78,12 @@ public class AbstractArrayStorageTest {
 
     @Test
     public void get() {
-        Resume resume = new Resume(UUID_1);
-        assertEquals(resume, storage.get(UUID_1));
+        assertEquals(existResume, storage.get(UUID_1));
     }
 
     @Test(expected = NotExistStorageException.class)
     public void getNotExist() {
-        storage.get("dummy");
+        storage.get(DUMMY);
     }
 
     @Test
@@ -96,8 +93,13 @@ public class AbstractArrayStorageTest {
     }
 
     @Test(expected = NotExistStorageException.class)
-    public void delete() {
+    public void deleteExist() {
         storage.delete(UUID_1);
         storage.get(UUID_1);
+    }
+
+    @Test(expected = NotExistStorageException.class)
+    public void deleteNotExist() {
+        storage.delete(DUMMY);
     }
 }
