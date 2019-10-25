@@ -7,8 +7,7 @@ import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 
 public abstract class AbstractArrayStorageTest {
@@ -49,17 +48,21 @@ public abstract class AbstractArrayStorageTest {
     }
 
     @Test
-    public void save() {
-        storage.save(new Resume(DUMMY));
+    public void saveNotExist() {
+        storage.save(DUMMY_RESUME);
         assertEquals(DUMMY_RESUME, storage.get(DUMMY));
         assertEquals(4, storage.size());
     }
 
     @Test(expected = StorageException.class)
     public void saveNotPossible() {
-        storage.clear();
-        for (int i = 0; i < AbstractArrayStorage.STORAGE_LIMIT; i++) {
-            storage.save(new Resume("uuid" + (i + 1)));
+        try {
+            for (int i = 3; i < AbstractArrayStorage.STORAGE_LIMIT; i++) {
+                storage.save(new Resume());
+            }
+        } catch (StorageException ex) {
+            System.out.println("Exception during cycle storage filling");
+            fail();
         }
         storage.save(DUMMY_RESUME);
     }
@@ -82,7 +85,7 @@ public abstract class AbstractArrayStorageTest {
     }
 
     @Test
-    public void get() {
+    public void getExist() {
         assertEquals(RESUME_1, storage.get(UUID_1));
     }
 
@@ -93,18 +96,11 @@ public abstract class AbstractArrayStorageTest {
 
     @Test
     public void getAll() {
-        Resume[] resumeArray = new Resume[]{new Resume(UUID_1), new Resume(UUID_2), new Resume(UUID_3)};
-        assertArrayEquals(resumeArray, storage.getAll());
-    }
-
-    @Test(expected = NotExistStorageException.class)
-    public void deleteExist() {
-        storage.delete(UUID_1);
-        storage.get(UUID_1);
+        assertArrayEquals(new Resume[]{RESUME_1, RESUME_2, RESUME_3}, storage.getAll());
     }
 
     @Test
-    public void deleteExist2() {
+    public void deleteExist() {
         storage.delete(UUID_1);
         assertEquals(2, storage.size());
     }
