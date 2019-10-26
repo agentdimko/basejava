@@ -7,10 +7,16 @@ import ru.javawebinar.basejava.model.Resume;
 
 import java.util.Arrays;
 
-public abstract class AbstractArrayStorage implements Storage {
+public abstract class AbstractArrayStorage extends AbstractStorage {
     protected final static int STORAGE_LIMIT = 10_000;
     protected int size = 0;
     protected Resume[] storage = new Resume[STORAGE_LIMIT];
+
+    @Override
+    public void clear() {
+        Arrays.fill(storage, 0, size, null);
+        size = 0;
+    }
 
     @Override
     public void update(Resume resume) {
@@ -37,18 +43,6 @@ public abstract class AbstractArrayStorage implements Storage {
     }
 
     @Override
-    public void clear() {
-        Arrays.fill(storage, 0, size, null);
-        size = 0;
-    }
-
-    @Override
-    public int size() {
-        return size;
-    }
-
-
-    @Override
     public Resume get(String uuid) {
         int index = getIndex(uuid);
         if (index < 0) {
@@ -56,11 +50,6 @@ public abstract class AbstractArrayStorage implements Storage {
         } else {
             return storage[index];
         }
-    }
-
-    @Override
-    public Resume[] getAll() {
-        return Arrays.copyOf(storage, size);
     }
 
     @Override
@@ -75,7 +64,15 @@ public abstract class AbstractArrayStorage implements Storage {
         }
     }
 
-    protected abstract int getIndex(String uuid);
+    @Override
+    public Resume[] getAll() {
+        return Arrays.copyOf(storage, size);
+    }
+
+    @Override
+    public int size() {
+        return size;
+    }
 
     protected abstract void insertElement(Resume resume, int index);
 
