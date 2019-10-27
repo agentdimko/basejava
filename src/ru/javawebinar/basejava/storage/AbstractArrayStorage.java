@@ -1,7 +1,5 @@
 package ru.javawebinar.basejava.storage;
 
-import ru.javawebinar.basejava.exception.ExistStorageException;
-import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
@@ -19,49 +17,11 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    public void update(Resume resume) {
-        int index = getIndex(resume.getUuid());
-        if (index < 0) {
-            throw new NotExistStorageException(resume.getUuid());
-        } else {
-            storage[index] = resume;
-        }
-    }
-
-    @Override
     public void save(Resume resume) {
         if (size == STORAGE_LIMIT) {
             throw new StorageException("Storage overflow", resume.getUuid());
         }
-        int index = getIndex(resume.getUuid());
-        if (index < 0) {
-            insertElement(resume, index);
-            size++;
-        } else {
-            throw new ExistStorageException(resume.getUuid());
-        }
-    }
-
-    @Override
-    public Resume get(String uuid) {
-        int index = getIndex(uuid);
-        if (index < 0) {
-            throw new NotExistStorageException(uuid);
-        } else {
-            return storage[index];
-        }
-    }
-
-    @Override
-    public void delete(String uuid) {
-        int index = getIndex(uuid);
-        if (index >= 0) {
-            fillDeletedElement(index);
-            storage[size - 1] = null;
-            size--;
-        } else {
-            throw new NotExistStorageException(uuid);
-        }
+        saveElement(resume);
     }
 
     @Override
@@ -74,7 +34,21 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
         return size;
     }
 
-    protected abstract void insertElement(Resume resume, int index);
+    protected void updateElement(int index, Resume resume){
+        storage[index] = resume;
+    }
+
+
+
+    protected Resume getElement(int index) {
+        return storage[index];
+    }
+
+    protected void deleteElement(int index) {
+        fillDeletedElement(index);
+        storage[size - 1] = null;
+        size--;
+    }
 
     protected abstract void fillDeletedElement(int index);
 }
