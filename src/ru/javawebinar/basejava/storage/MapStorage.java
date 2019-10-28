@@ -1,11 +1,12 @@
 package ru.javawebinar.basejava.storage;
 
+import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class MapStorage extends AbstractStorage{
+public class MapStorage extends AbstractStorage{
     private Map<String, Resume> storage = new HashMap<>();
 
     @Override
@@ -13,31 +14,19 @@ public abstract class MapStorage extends AbstractStorage{
         storage.clear();
     }
 
-    @Override
-    public void update(Resume resume) {
-
-    }
-
-    @Override
-    public void save(Resume resume) {
-//        storage.put(resume.getUuid(), resume);
-    }
-
-    @Override
-    public Resume get(String uuid) {
-        //
-
-        return storage.get(uuid);
-    }
-
-    @Override
-    public void delete(String uuid) {
-        storage.remove(uuid);
-    }
+//    @Override
+//    public void delete(String uuid) {
+//        storage.remove(uuid);
+//    }
 
     @Override
     public Resume[] getAll() {
-        return new Resume[0];
+        Resume[] resumes = new Resume[storage.size()];
+        int count = 0;
+        for (Map.Entry<String, Resume> entry : storage.entrySet()) {
+            resumes[count++] = entry.getValue();
+        }
+        return resumes;
     }
 
     @Override
@@ -47,6 +36,39 @@ public abstract class MapStorage extends AbstractStorage{
 
     @Override
     protected int getIndex(String uuid) {
-        return 0;
+        if(storage.get(uuid) != null){
+            return 0;
+        } else {
+            return -1;
+        }
+    }
+
+    @Override
+    protected void updateElement(int index, Resume resume) {
+        storage.put(resume.getUuid(), resume);
+    }
+
+    @Override
+    protected void saveElement(int index, Resume resume) {
+        if(index < 0){
+            storage.put(resume.getUuid(), resume);
+        } else {
+            throw new ExistStorageException(resume.getUuid());
+        }
+    }
+
+    @Override
+    protected Resume getElement(int index, String uuid) {
+        return storage.get(uuid);
+    }
+
+    @Override
+    protected void insertElement(int index, Resume resume) {
+
+    }
+
+    @Override
+    protected void deleteElement(int index, String uuid) {
+        storage.remove(uuid);
     }
 }
