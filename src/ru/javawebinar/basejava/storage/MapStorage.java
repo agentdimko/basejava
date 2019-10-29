@@ -9,7 +9,7 @@ public class MapStorage extends AbstractStorage {
     private Map<String, Resume> storage = new HashMap<>();
 
     @Override
-    protected Object getIndex(String uuid) {
+    protected String getIndex(String uuid) {
         return uuid;
     }
 

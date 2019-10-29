@@ -9,7 +9,7 @@ public class ListStorage extends AbstractStorage {
     private List<Resume> storage = new ArrayList<>();
 
     @Override
-    protected Object getIndex(String uuid) {
+    protected Integer getIndex(String uuid) {
         for (int i = 0; i < storage.size(); i++) {
             if (storage.get(i).getUuid().equals(uuid)) {
                 return i;
@@ -20,10 +20,7 @@ public class ListStorage extends AbstractStorage {
 
     @Override
     protected boolean isResumeExist(Object index) {
-        if ((int) index == -1) {
-            return false;
-        }
-        return true;
+        return (int) index != -1;
     }
 
     @Override
