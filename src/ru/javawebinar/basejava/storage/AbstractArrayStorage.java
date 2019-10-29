@@ -10,19 +10,21 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     protected int size = 0;
     protected Resume[] storage = new Resume[STORAGE_LIMIT];
 
+    protected abstract void deleteElement(int index);
+
+    protected abstract void saveElement(int index, Resume resume);
+
+
     @Override
-    protected Integer getIndex(String uuid) {
-        for (int i = 0; i < size; i++) {
-            if (storage[i].getUuid().equals(uuid)) {
-                return i;
-            }
-        }
-        return -1;
+    protected void doDelete(Object index) {
+        deleteElement((int) index);
+        storage[size - 1] = null;
+        size--;
     }
 
     @Override
     protected boolean isResumeExist(Object index) {
-        return (int) index != -1;
+        return (int) index >= 0;
     }
 
     @Override
@@ -59,6 +61,5 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
         return size;
     }
 
-    protected abstract void saveElement(int index, Resume resume);
 
 }
