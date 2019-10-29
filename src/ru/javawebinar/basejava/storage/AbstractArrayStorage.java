@@ -11,6 +11,42 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     protected Resume[] storage = new Resume[STORAGE_LIMIT];
 
     @Override
+    protected Object getIndex(String uuid) {
+        for (int i = 0; i < size; i++) {
+            if (storage[i].getUuid().equals(uuid)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    @Override
+    protected boolean isResumeExist(Object index) {
+        if ((int) index == -1) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    protected void doUpdate(Object index, Resume resume) {
+        storage[(int) index] = resume;
+    }
+
+    @Override
+    protected void doSave(Object index, Resume resume) {
+        if (size == STORAGE_LIMIT) {
+            throw new StorageException("Storage overflow", resume.getUuid());
+        }
+        saveElement((int) index, resume);
+    }
+
+    @Override
+    protected Resume doGet(Object index) {
+        return storage[(int) index];
+    }
+
+    @Override
     public void clear() {
         Arrays.fill(storage, 0, size, null);
         size = 0;
@@ -26,27 +62,6 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
         return size;
     }
 
-    protected void updateElement(int index, Resume resume) {
-        storage[index] = resume;
-    }
+    protected abstract void saveElement(int index, Resume resume);
 
-    protected void saveElement(int index, Resume resume) {
-        if (size == STORAGE_LIMIT) {
-            throw new StorageException("Storage overflow", resume.getUuid());
-        }
-        insertElement(index, resume);
-    }
-
-    protected Resume getElement(int index, String uuid) {
-        return storage[index];
-    }
-
-    protected void deleteElement(int index, String uuid) {
-        fillDeletedElement(index);
-        storage[size - 1] = null;
-        size--;
-    }
-
-    protected abstract void insertElement(int index, Resume resume);
-    protected abstract void fillDeletedElement(int index);
 }

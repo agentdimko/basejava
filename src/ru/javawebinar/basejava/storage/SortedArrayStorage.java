@@ -2,17 +2,10 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.model.Resume;
 
-import java.util.Arrays;
-
 public class SortedArrayStorage extends AbstractArrayStorage {
 
     @Override
-    protected int getIndex(String uuid) {
-        return Arrays.binarySearch(storage, 0, size, new Resume(uuid));
-    }
-
-    @Override
-    protected void insertElement(int index, Resume resume) {
+    protected void saveElement(int index, Resume resume) {
         index = -index - 1;
         System.arraycopy(storage, index, storage, index + 1, size - index);
         storage[index] = resume;
@@ -20,7 +13,8 @@ public class SortedArrayStorage extends AbstractArrayStorage {
     }
 
     @Override
-    protected void fillDeletedElement(int index) {
-        System.arraycopy(storage, index + 1, storage, index, size - 1 - index);
+    protected void doDelete(Object index) {
+        System.arraycopy(storage, (int) index + 1, storage, (int) index, size - 1 - (int) index);
+        size--;
     }
 }

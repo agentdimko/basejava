@@ -97,7 +97,7 @@ public abstract class AbstractStorageTest {
             if (resumes[i].getUuid().equals(UUID_1) || resumes[i].getUuid().equals(UUID_2)
                     || resumes[i].getUuid().equals(UUID_3)) {
             } else {
-                fail("Method getAll failed");
+                fail("Method getAll() failed");
             }
         }
 

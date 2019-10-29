@@ -5,53 +5,56 @@ import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 public abstract class AbstractStorage implements Storage {
+
+    protected abstract Object getIndex(String uuid);
+
+    protected abstract boolean isResumeExist(Object index);
+
+    protected abstract void doUpdate(Object index, Resume resume);
+
+    protected abstract void doSave(Object index, Resume resume);
+
+    protected abstract Resume doGet(Object index);
+
+    protected abstract void doDelete(Object index);
+
     @Override
     public void update(Resume resume) {
-        int index = getIndex(resume.getUuid());
-        if (index < 0) {
-            throw new NotExistStorageException(resume.getUuid());
+        Object index = getIndex(resume.getUuid());
+        if (isResumeExist(index)) {
+            doUpdate(index, resume);
         } else {
-            updateElement(index, resume);
+            throw new NotExistStorageException(resume.getUuid());
         }
     }
 
     @Override
     public void save(Resume resume) {
-        int index = getIndex(resume.getUuid());
-        if (index < 0) {
-            saveElement(index, resume);
-        } else {
+        Object index = getIndex(resume.getUuid());
+        if (isResumeExist(index)) {
             throw new ExistStorageException(resume.getUuid());
+        } else {
+            doSave(index, resume);
         }
     }
 
     @Override
     public Resume get(String uuid) {
-        int index = getIndex(uuid);
-        if (index < 0) {
-            throw new NotExistStorageException(uuid);
+        Object index = getIndex(uuid);
+        if (isResumeExist(index)) {
+            return doGet(index);
         } else {
-            return getElement(index, uuid);
+            throw new NotExistStorageException(uuid);
         }
     }
 
     @Override
     public void delete(String uuid) {
-        int index = getIndex(uuid);
-        if (index < 0) {
-            throw new NotExistStorageException(uuid);
+        Object index = getIndex(uuid);
+        if (isResumeExist(index)) {
+            doDelete(index);
         } else {
-            deleteElement(index, uuid);
+            throw new NotExistStorageException(uuid);
         }
     }
-
-    protected abstract int getIndex(String uuid);
-
-    protected abstract void updateElement(int index, Resume resume);
-
-    protected abstract void saveElement(int index, Resume resume);
-
-    protected abstract Resume getElement(int index, String uuid);
-
-    protected abstract void deleteElement(int index, String uuid);
 }
