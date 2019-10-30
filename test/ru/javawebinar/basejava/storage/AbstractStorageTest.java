@@ -6,8 +6,9 @@ import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 public abstract class AbstractStorageTest {
 
@@ -16,10 +17,10 @@ public abstract class AbstractStorageTest {
     private static final String UUID_3 = "uuid3";
     private static final String DUMMY = "dummy";
 
-    private static final Resume RESUME_1 = new Resume(UUID_1);
-    private static final Resume RESUME_2 = new Resume(UUID_2);
-    private static final Resume RESUME_3 = new Resume(UUID_3);
-    protected static final Resume DUMMY_RESUME = new Resume(DUMMY);
+    private static final Resume RESUME_1 = new Resume(UUID_1, "Name1");
+    private static final Resume RESUME_2 = new Resume(UUID_2, "Name2");
+    private static final Resume RESUME_3 = new Resume(UUID_3, "Name3");
+    private static final Resume DUMMY_RESUME = new Resume(DUMMY, "Name4");
 
     protected Storage storage;
 
@@ -30,9 +31,10 @@ public abstract class AbstractStorageTest {
     @Before
     public void setUp() throws Exception {
         storage.clear();
+        storage.save(RESUME_3);
         storage.save(RESUME_1);
         storage.save(RESUME_2);
-        storage.save(RESUME_3);
+
     }
 
     @Test
@@ -89,18 +91,12 @@ public abstract class AbstractStorageTest {
     }
 
     @Test
-    public void getAll() {
-        Resume[] resumes = storage.getAll();
-        assertEquals(3, resumes.length);
-        for (int i = 0; i < storage.size(); i++) {
-            if (resumes[i].getUuid().equals(UUID_1) || resumes[i].getUuid().equals(UUID_2)
-                    || resumes[i].getUuid().equals(UUID_3)) {
-            } else {
-                fail("Method getAll() failed");
-            }
-        }
-
-
+    public void getAllSortedTest() {
+        List<Resume> resumes = storage.getAllSorted();
+        assertEquals(3, resumes.size());
+        assertEquals(RESUME_1, resumes.get(0));
+        assertEquals(RESUME_2, resumes.get(1));
+        assertEquals(RESUME_3, resumes.get(2));
     }
 
     @Test
