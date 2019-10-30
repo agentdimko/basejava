@@ -6,55 +6,55 @@ import ru.javawebinar.basejava.model.Resume;
 
 public abstract class AbstractStorage implements Storage {
 
-    protected abstract Object getIndex(String uuid);
+    protected abstract Object getSearchKey(String uuid);
 
-    protected abstract boolean isResumeExist(Object index);
+    protected abstract boolean isExist(Object searchKey);
 
-    protected abstract void doUpdate(Object index, Resume resume);
+    protected abstract void doUpdate(Object searchKey, Resume resume);
 
-    protected abstract void doSave(Object index, Resume resume);
+    protected abstract void doSave(Object searchKey, Resume resume);
 
-    protected abstract Resume doGet(Object index);
+    protected abstract Resume doGet(Object searchKey);
 
-    protected abstract void doDelete(Object index);
+    protected abstract void doDelete(Object searchKey);
 
     @Override
     public void update(Resume resume) {
-        Object index = getIndex(resume.getUuid());
-        if (isResumeExist(index)) {
-            doUpdate(index, resume);
-        } else {
-            throw new NotExistStorageException(resume.getUuid());
-        }
+        Object searchKey = getExistedSearchKey(resume.getUuid());
+        doUpdate(searchKey, resume);
     }
 
     @Override
     public void save(Resume resume) {
-        Object index = getIndex(resume.getUuid());
-        if (isResumeExist(index)) {
-            throw new ExistStorageException(resume.getUuid());
-        } else {
-            doSave(index, resume);
-        }
+        Object searchKey = getNotExistedSearchKey(resume.getUuid());
+        doSave(searchKey, resume);
     }
 
     @Override
     public Resume get(String uuid) {
-        Object index = getIndex(uuid);
-        if (isResumeExist(index)) {
-            return doGet(index);
-        } else {
-            throw new NotExistStorageException(uuid);
-        }
+        Object searchKey = getExistedSearchKey(uuid);
+        return doGet(searchKey);
     }
 
     @Override
     public void delete(String uuid) {
-        Object index = getIndex(uuid);
-        if (isResumeExist(index)) {
-            doDelete(index);
-        } else {
+        Object searchKey = getExistedSearchKey(uuid);
+        doDelete(searchKey);
+    }
+
+    private Object getNotExistedSearchKey(String uuid) {
+        Object searchKey = getSearchKey(uuid);
+        if (isExist(searchKey)) {
+            throw new ExistStorageException(uuid);
+        }
+        return searchKey;
+    }
+
+    private Object getExistedSearchKey(String uuid) {
+        Object searchKey = getSearchKey(uuid);
+        if (!isExist(searchKey)) {
             throw new NotExistStorageException(uuid);
         }
+        return searchKey;
     }
 }
