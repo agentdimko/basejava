@@ -15,7 +15,6 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
 
     protected abstract void saveElement(int index, Resume resume);
 
-
     @Override
     protected void doDelete(Object index) {
         deleteElement((int) index);
@@ -39,6 +38,7 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
             throw new StorageException("Storage overflow", resume.getUuid());
         }
         saveElement((int) index, resume);
+        size++;
     }
 
     @Override
@@ -54,23 +54,12 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
 
     @Override
     protected List<Resume> getList() {
-        Resume[] arr = Arrays.copyOf(storage, size);
-
-        return Arrays.asList(arr);
+        Resume[] resumes = Arrays.copyOf(storage, size);
+        return Arrays.asList(resumes);
     }
-
-//    @Override
-//    public List<Resume> getAllSorted() {
-//        Resume[] resumes = Arrays.copyOf(storage, size);
-//        sortByName(resumes);
-//        return Arrays.asList(resumes);
-//    }
-
 
     @Override
     public int size() {
         return size;
     }
-
-
 }

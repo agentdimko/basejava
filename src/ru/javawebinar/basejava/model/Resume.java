@@ -9,24 +9,23 @@ import java.util.UUID;
  * Initial resume class
  */
 public class Resume implements Comparable<Resume> {
-
     private final String uuid;
     private String fullName;
-
-    private static void checkString(String fullName, String uuid) {
-        if (fullName == null || fullName.trim().isEmpty()) {
-            throw new StorageException("Full name must not be empty", uuid);
-        }
-    }
 
     public Resume(String fullName) {
         this(UUID.randomUUID().toString(), fullName);
     }
 
     public Resume(String uuid, String fullName) {
-        checkString(fullName, uuid);
+        checkFullName(fullName, uuid);
         this.uuid = uuid;
         this.fullName = fullName.trim();
+    }
+
+    private static void checkFullName(String fullName, String uuid) {
+        if (fullName == null || fullName.trim().isEmpty()) {
+            throw new StorageException("Full name must not be empty", uuid);
+        }
     }
 
     public String getUuid() {
@@ -38,7 +37,7 @@ public class Resume implements Comparable<Resume> {
     }
 
     public void setFullName(String fullName) {
-        checkString(fullName, uuid);
+        checkFullName(fullName, uuid);
         this.fullName = fullName.trim();
     }
 
