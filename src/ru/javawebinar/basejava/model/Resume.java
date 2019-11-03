@@ -2,6 +2,7 @@ package ru.javawebinar.basejava.model;
 
 import ru.javawebinar.basejava.exception.StorageException;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -11,6 +12,8 @@ import java.util.UUID;
 public class Resume implements Comparable<Resume> {
     private final String uuid;
     private String fullName;
+    private Map<ContactType, String> contacts;
+    private Map<SectionType, Section> sections;
 
     public Resume(String fullName) {
         this(UUID.randomUUID().toString(), fullName);
@@ -20,12 +23,6 @@ public class Resume implements Comparable<Resume> {
         checkFullName(fullName, uuid);
         this.uuid = uuid;
         this.fullName = fullName.trim();
-    }
-
-    private static void checkFullName(String fullName, String uuid) {
-        if (fullName == null || fullName.trim().isEmpty()) {
-            throw new StorageException("Full name must not be empty", uuid);
-        }
     }
 
     public String getUuid() {
@@ -39,6 +36,22 @@ public class Resume implements Comparable<Resume> {
     public void setFullName(String fullName) {
         checkFullName(fullName, uuid);
         this.fullName = fullName.trim();
+    }
+
+    public Map<ContactType, String> getContacts() {
+        return contacts;
+    }
+
+    public void setContacts(Map<ContactType, String> contacts) {
+        this.contacts = contacts;
+    }
+
+    public Map<SectionType, Section> getSections() {
+        return sections;
+    }
+
+    public void setSections(Map<SectionType, Section> sections) {
+        this.sections = sections;
     }
 
     @Override
@@ -67,5 +80,11 @@ public class Resume implements Comparable<Resume> {
     public int compareTo(Resume o) {
         int i = fullName.compareTo(o.fullName);
         return i != 0 ? i : uuid.compareTo(o.getUuid());
+    }
+
+    private static void checkFullName(String fullName, String uuid) {
+        if (fullName == null || fullName.trim().isEmpty()) {
+            throw new StorageException("Full name must not be empty", uuid);
+        }
     }
 }
