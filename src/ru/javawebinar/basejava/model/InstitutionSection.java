@@ -1,13 +1,15 @@
 package ru.javawebinar.basejava.model;
 
 import java.util.List;
+import java.util.Objects;
 
 public class InstitutionSection implements Section<Institution> {
-    private List<Institution> storage;
+    private final List<Institution> storage;
+    private String title;
 
-    @Override
-    public List<Institution> getAll() {
-        return storage;
+    public InstitutionSection(List<Institution> storage, String title) {
+        this.storage = storage;
+        this.title = title;
     }
 
     @Override
@@ -16,8 +18,8 @@ public class InstitutionSection implements Section<Institution> {
     }
 
     @Override
-    public void insertElement(int index, Institution description) {
-        storage.add(index, description);
+    public void updateElement(int index, Institution element) {
+        storage.set(index, element);
     }
 
     @Override
@@ -33,5 +35,28 @@ public class InstitutionSection implements Section<Institution> {
     @Override
     public void clear() {
         storage.clear();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        InstitutionSection that = (InstitutionSection) o;
+        return storage.equals(that.storage);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(storage);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(title).append("\n");
+        for (Institution institution : storage) {
+            sb.append(institution.toString());
+        }
+        return sb.toString();
     }
 }

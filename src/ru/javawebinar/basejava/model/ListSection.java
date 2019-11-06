@@ -1,17 +1,15 @@
 package ru.javawebinar.basejava.model;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ListSection implements Section<String> {
-    private List<String> storage;
+    private final List<String> storage;
+    private String title;
 
-    public ListSection(List<String> storage) {
+    public ListSection(List<String> storage, String title) {
         this.storage = storage;
-    }
-
-    @Override
-    public List<String> getAll() {
-        return storage;
+        this.title = title;
     }
 
     @Override
@@ -20,8 +18,8 @@ public class ListSection implements Section<String> {
     }
 
     @Override
-    public void insertElement(int index, String text) {
-        storage.add(index, text);
+    public void updateElement(int index, String element) {
+        storage.set(index, element);
     }
 
     @Override
@@ -37,5 +35,28 @@ public class ListSection implements Section<String> {
     @Override
     public void clear() {
         storage.clear();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ListSection section = (ListSection) o;
+        return storage.equals(section.storage);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(storage);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(title).append("\n");
+        for (String s : storage) {
+            sb.append(s).append("\n");
+        }
+        return sb.toString();
     }
 }
