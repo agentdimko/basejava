@@ -3,38 +3,16 @@ package ru.javawebinar.basejava.model;
 import java.util.List;
 import java.util.Objects;
 
-public class InstitutionSection implements Section<Institution> {
-    private final List<Institution> storage;
-    private String title;
+public class InstitutionSection implements Section {
+    private final List<Institution> items;
 
-    public InstitutionSection(List<Institution> storage, String title) {
-        this.storage = storage;
-        this.title = title;
+    public InstitutionSection(List<Institution> items) {
+        Objects.requireNonNull(items, "Items must not be null");
+        this.items = items;
     }
 
-    @Override
-    public void addElement(Institution description) {
-        storage.add(description);
-    }
-
-    @Override
-    public void updateElement(int index, Institution element) {
-        storage.set(index, element);
-    }
-
-    @Override
-    public void removeElement(int index) {
-        storage.remove(index);
-    }
-
-    @Override
-    public int size() {
-        return storage.size();
-    }
-
-    @Override
-    public void clear() {
-        storage.clear();
+    public List<Institution> getStorage() {
+        return items;
     }
 
     @Override
@@ -42,21 +20,16 @@ public class InstitutionSection implements Section<Institution> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         InstitutionSection that = (InstitutionSection) o;
-        return storage.equals(that.storage);
+        return items.equals(that.items);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(storage);
+        return Objects.hash(items);
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(title).append("\n");
-        for (Institution institution : storage) {
-            sb.append(institution.toString());
-        }
-        return sb.toString();
+        return items.toString();
     }
 }

@@ -5,36 +5,27 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Institution {
-    private String institution;
-    private String url;
+    private HyperLink homePage;
     private LocalDate startDate;
     private LocalDate endDate;
     private String position;
     private String description;
 
-    public Institution(String institution, String url, LocalDate startDate, LocalDate endDate, String position, String description) {
-        this.institution = institution;
-        this.url = url;
+    public Institution(String url, String name, LocalDate startDate, LocalDate endDate, String position,
+                       String description) {
+        this.homePage = new HyperLink(url, name);
         this.startDate = startDate;
         this.endDate = endDate;
         this.position = position;
         this.description = description;
     }
 
-    public String getInstitution() {
-        return institution;
+    public HyperLink getHomePage() {
+        return homePage;
     }
 
-    public void setInstitution(String institution) {
-        this.institution = institution;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
+    public void setHomePage(HyperLink homePage) {
+        this.homePage = homePage;
     }
 
     public LocalDate getStartDate() {
@@ -74,8 +65,7 @@ public class Institution {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Institution that = (Institution) o;
-        return institution.equals(that.institution) &&
-                url.equals(that.url) &&
+        return homePage.equals(that.homePage) &&
                 startDate.equals(that.startDate) &&
                 Objects.equals(endDate, that.endDate) &&
                 Objects.equals(position, that.position) &&
@@ -84,24 +74,20 @@ public class Institution {
 
     @Override
     public int hashCode() {
-        return Objects.hash(institution, url, startDate, endDate, position, description);
+        return Objects.hash(homePage, startDate, endDate, position, description);
     }
 
     @Override
     public String toString() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yyyy");
         StringBuilder sb = new StringBuilder();
-        if (url == null) {
-            sb.append(institution).append("\n");
-        } else {
-            sb.append("<a href=\"").append(url).append("\">").append(institution).append("</a>\n");
-        }
+        sb.append(homePage.getLink() == null ? homePage.getText() + " " :
+                homePage.getLink() + " " + homePage.getText() + " ");
         sb.append(formatter.format(startDate)).append(" - ").append((endDate == null) ? "Сейчас" :
-                formatter.format(endDate)).append(
-                "\t")
-                .append((position == null) ? "" : position + "\n")
-                .append(description)
-                .append("\n");
+                formatter.format(endDate) + " ");
+        sb.append(position == null ? " " : " " + position + " ");
+        sb.append(description);
         return sb.toString();
     }
 }
+

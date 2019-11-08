@@ -3,38 +3,16 @@ package ru.javawebinar.basejava.model;
 import java.util.List;
 import java.util.Objects;
 
-public class ListSection implements Section<String> {
-    private final List<String> storage;
-    private String title;
+public class ListSection implements Section {
+    private final List<String> items;
 
-    public ListSection(List<String> storage, String title) {
-        this.storage = storage;
-        this.title = title;
+    public ListSection(List<String> items) {
+        Objects.requireNonNull(items, "Items must not be null");
+        this.items = items;
     }
 
-    @Override
-    public void addElement(String text) {
-        storage.add(text);
-    }
-
-    @Override
-    public void updateElement(int index, String element) {
-        storage.set(index, element);
-    }
-
-    @Override
-    public void removeElement(int index) {
-        storage.remove(index);
-    }
-
-    @Override
-    public int size() {
-        return storage.size();
-    }
-
-    @Override
-    public void clear() {
-        storage.clear();
+    public List<String> getItems() {
+        return items;
     }
 
     @Override
@@ -42,21 +20,16 @@ public class ListSection implements Section<String> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ListSection section = (ListSection) o;
-        return storage.equals(section.storage);
+        return items.equals(section.items);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(storage);
+        return Objects.hash(items);
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(title).append("\n");
-        for (String s : storage) {
-            sb.append(s).append("\n");
-        }
-        return sb.toString();
+        return items.toString();
     }
 }
