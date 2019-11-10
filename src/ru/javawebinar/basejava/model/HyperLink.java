@@ -36,7 +36,7 @@ public class HyperLink {
 
     @Override
     public String toString() {
-        return link + "," + text;
+        return link + ", " + text;
     }
 
     private static void checkText(String fullName, String uuid) {

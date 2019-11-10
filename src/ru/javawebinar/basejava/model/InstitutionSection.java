@@ -1,17 +1,16 @@
 package ru.javawebinar.basejava.model;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class InstitutionSection implements Section {
-    private final List<Institution> items;
+    private final LinkedHashMap<HyperLink, List<Institution>> items;
 
-    public InstitutionSection(List<Institution> items) {
+    public InstitutionSection(LinkedHashMap<HyperLink, List<Institution>> items) {
         Objects.requireNonNull(items, "Items must not be null");
         this.items = items;
     }
 
-    public List<Institution> getStorage() {
+    public LinkedHashMap<HyperLink, List<Institution>> getStorage() {
         return items;
     }
 
@@ -19,8 +18,8 @@ public class InstitutionSection implements Section {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        InstitutionSection that = (InstitutionSection) o;
-        return items.equals(that.items);
+        InstitutionSection section = (InstitutionSection) o;
+        return items.equals(section.items);
     }
 
     @Override
@@ -30,6 +29,11 @@ public class InstitutionSection implements Section {
 
     @Override
     public String toString() {
-        return items.toString();
+        StringBuilder sb = new StringBuilder();
+        ArrayList<Institution> list = null;
+        for (Map.Entry entry : items.entrySet()) {
+            sb.append(entry.getKey()).append(" ").append(entry.getValue());
+        }
+        return sb.toString();
     }
 }

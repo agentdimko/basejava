@@ -4,6 +4,8 @@ import ru.javawebinar.basejava.model.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 public class ResumeTestData {
     private final Resume resume = new Resume("Григорий Кислин");
@@ -16,24 +18,17 @@ public class ResumeTestData {
         ResumeTestData testData = new ResumeTestData();
         Resume resume = testData.getResume();
         testData.setContact(resume);
-        testData.setSection(resume);
+        testData.setPersonal(resume);
+        testData.setAchievement(resume);
+        testData.setQualification(resume);
+        testData.setWorkExperience(resume);
+        testData.setEducationExperience(resume);
         System.out.println(resume.getFullName());
-        outputData(resume);
+        System.out.println();
+        testData.outputData(resume);
     }
 
-    public static void outputData(Resume resume) {
-        for (ContactType type : ContactType.values()) {
-            System.out.print(type.getTitle());
-            System.out.println(resume.getContact(type));
-        }
-
-        for (SectionType type : SectionType.values()) {
-            System.out.println(type.getTitle());
-            System.out.println(resume.getSection(type) + " ");
-        }
-    }
-
-    public void setContact(Resume resume) {
+    private void setContact(Resume resume) {
         resume.setContact(ContactType.PHONE, "+7(921) 855-0482");
         resume.setContact(ContactType.SKYPE, "grigory.kislin");
         resume.setContact(ContactType.EMAIL, "gkislin@yandex.ru");
@@ -43,7 +38,7 @@ public class ResumeTestData {
         resume.setContact(ContactType.HOMEPAGE, "http://gkislin.ru/");
     }
 
-    public void setSection(Resume resume) {
+    private void setPersonal(Resume resume) {
         ArrayList<String> objective = new ArrayList<>();
         objective.add("Ведущий стажировок и корпоративного обучения по Java Web и Enterprise технологиям");
         ListSection objectiveSection = new ListSection(objective);
@@ -53,7 +48,9 @@ public class ResumeTestData {
         personal.add("Аналитический склад ума, сильная логика, креативность, инициативность. Пурист кода и архитектуры.");
         ListSection personalSection = new ListSection(personal);
         resume.setSection(SectionType.PERSONAL, personalSection);
+    }
 
+    private void setAchievement(Resume resume) {
         ArrayList<String> achievements = new ArrayList<>();
         achievements.add("С 2013 года: разработка проектов \"Разработка Web приложения\",\"Java Enterprise\", \"Многомодульный maven. Многопоточность. XML (JAXB/StAX). Веб сервисы (JAX-RS/SOAP). Удаленное взаимодействие (JMS/AKKA)\". Организация онлайн стажировок и ведение проектов. Более 1000 выпускников.");
         achievements.add("Реализация двухфакторной аутентификации для онлайн платформы управления проектами Wrike. " +
@@ -64,7 +61,9 @@ public class ResumeTestData {
         achievements.add("Реализация протоколов по приему платежей всех основных платежных системы России (Cyberplat, Eport, Chronopay, Сбербанк), Белоруcсии(Erip, Osmp) и Никарагуа.");
         ListSection achievementSection = new ListSection(achievements);
         resume.setSection(SectionType.ACHIEVEMENT, achievementSection);
+    }
 
+    private void setQualification(Resume resume) {
         ArrayList<String> qualifications = new ArrayList<>();
         qualifications.add("JEE AS: GlassFish (v2.1, v3), OC4J, JBoss, Tomcat, Jetty, WebLogic, WSO2");
         qualifications.add("Version control: Subversion, Git, Mercury, ClearCase, Perforce");
@@ -83,26 +82,89 @@ public class ResumeTestData {
         qualifications.add("Родной русский, английский \"upper intermediate\"");
         ListSection qualificationSection = new ListSection(qualifications);
         resume.setSection(SectionType.QUALIFICATIONS, qualificationSection);
-
-        ArrayList<Institution> workPlaces = new ArrayList<>();
-        workPlaces.add(new Institution("http://javaops.ru/", "Java Online Projects",
-                LocalDate.of(2013, 10, 1), null, "Автор проекта",
-                "Создание, организация и проведение Java онлайн проектов и стажировок."));
-        workPlaces.add(new Institution("https://www.wrike.com", "Wrike",
-                LocalDate.of(2014, 10, 1), LocalDate.of(2016, 1, 1),
-                "Старший разработчик (backend)", "Проектирование и разработка онлайн платформы управления проектами Wrike (Java 8 API, Maven, Spring, MyBatis, Guava, Vaadin, PostgreSQL, Redis). Двухфакторная аутентификация, авторизация по OAuth1, OAuth2, JWT SSO."));
-        workPlaces.add(new Institution(null, "RIT Center", LocalDate.of(2012, 04, 01), LocalDate.of(2014, 10, 1), "Java архитектор", "Организация процесса разработки системы ERP для разных окружений: релизная политика, версионирование, ведение CI (Jenkins), миграция базы (кастомизация Flyway), конфигурирование системы (pgBoucer, Nginx), AAA via SSO. Архитектура БД и серверной части системы. Разработка интергационных сервисов: CMIS, BPMN2, 1C (WebServices), сервисов общего назначения (почта, экспорт в pdf, doc, html). Интеграция Alfresco JLAN для online редактирование из браузера документов MS Office. Maven + plugin development, Ant, Apache Commons, Spring security, Spring MVC, Tomcat,WSO2, xcmis, OpenCmis, Bonita, Python scripting, Unix shell remote scripting via ssh tunnels, PL/Python"));
-        InstitutionSection experience = new InstitutionSection(workPlaces);
-        resume.setSection(SectionType.EXPERIENCE, experience);
-
-        ArrayList<Institution> studyPlaces = new ArrayList<>();
-        studyPlaces.add(new Institution("https://www.coursera.org/course/progfun", "Coursera", LocalDate.of(2013, 3,
-                1), LocalDate.of(2013, 5, 1), null, "\"Functional Programming Principles in Scala\" by Martin Odersky"));
-        studyPlaces.add(new Institution("http://www.luxoft-training.ru/training/catalog/course.html?ID=22366",
-                "Luxoft", LocalDate.of(2011, 3, 1), LocalDate.of(2011, 4, 1), null, "Курс \"Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.\""));
-        InstitutionSection education = new InstitutionSection(studyPlaces);
-        resume.setSection(SectionType.EDUCATION, education);
     }
+
+    private void setWorkExperience(Resume resume) {
+        LinkedHashMap<HyperLink, List<Institution>> workMap = new LinkedHashMap<>();
+
+        List<Institution> list1 = new ArrayList<>();
+        HyperLink link1 = new HyperLink("http://javaops.ru/", "Java Online Projects");
+        Institution institution1 = new Institution(link1, LocalDate.of(2013, 10, 1),
+                null, "Автор проекта",
+                "Создание, организация и проведение Java онлайн проектов и стажировок.");
+        list1.add(institution1);
+        workMap.put(link1, list1);
+
+        List<Institution> list2 = new ArrayList<>();
+        HyperLink link2 = new HyperLink("https://www.wrike.com", "Wrike");
+        Institution institution2 = new Institution(link2, LocalDate.of(2014, 10, 1),
+                LocalDate.of(2016, 1, 1), "Старший разработчик (backend)",
+                "Проектирование и разработка онлайн платформы управления проектами Wrike (Java 8 API, Maven, Spring, MyBatis, Guava, Vaadin, PostgreSQL, Redis). Двухфакторная аутентификация, авторизация по OAuth1, OAuth2, JWT SSO.");
+        list2.add(institution2);
+        workMap.put(link2, list2);
+
+        List<Institution> list3 = new ArrayList<>();
+        HyperLink link3 = new HyperLink(null, "RIT Center");
+        Institution institution3 = new Institution(link3, LocalDate.of(2012, 04, 01),
+                LocalDate.of(2014, 10, 1),
+                "Java архитектор", "Организация процесса разработки системы ERP для разных окружений: релизная политика, версионирование, ведение CI (Jenkins), миграция базы (кастомизация Flyway), конфигурирование системы (pgBoucer, Nginx), AAA via SSO. Архитектура БД и серверной части системы. Разработка интергационных сервисов: CMIS, BPMN2, 1C (WebServices), сервисов общего назначения (почта, экспорт в pdf, doc, html). Интеграция Alfresco JLAN для online редактирование из браузера документов MS Office. Maven + plugin development, Ant, Apache Commons, Spring security, Spring MVC, Tomcat,WSO2, xcmis, OpenCmis, Bonita, Python scripting, Unix shell remote scripting via ssh tunnels, PL/Python");
+        list3.add(institution3);
+        workMap.put(link3, list3);
+
+        InstitutionSection institutionSection = new InstitutionSection(workMap);
+        resume.setSection(SectionType.EXPERIENCE, institutionSection);
+    }
+
+    private void setEducationExperience(Resume resume) {
+        LinkedHashMap<HyperLink, List<Institution>> educationMap = new LinkedHashMap<>();
+
+        List<Institution> list1 = new ArrayList<>();
+        HyperLink link1 = new HyperLink("https://www.coursera.org/course/progfun", "Coursera");
+        Institution institution4 = new Institution(link1, LocalDate.of(2013, 3, 1),
+                LocalDate.of(2013, 5, 1),
+                null,
+                "\"Functional Programming Principles in Scala\" by Martin Odersky");
+        list1.add(institution4);
+        educationMap.put(link1, list1);
+
+        List<Institution> list2 = new ArrayList<>();
+        HyperLink link2 = new HyperLink("http://www.luxoft-training.ru/training/catalog/course.html?ID=22366",
+                "Luxoft");
+        Institution institution5 = new Institution(link2, LocalDate.of(2011, 3, 1), LocalDate.of(2011, 4, 1), null,
+                "Курс \"Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.\"");
+        list2.add(institution5);
+        educationMap.put(link2, list2);
+
+        List<Institution> list3 = new ArrayList<>();
+        HyperLink link3 = new HyperLink("http://www.ifmo.ru/", "Санкт-Петербургский национальный " +
+                "исследовательский университет информационных технологий, механики и оптики");
+        Institution institution6 = new Institution(link3, LocalDate.of(1993, 9, 1)
+                , LocalDate.of(1996, 7, 1), null, "Аспирантура (программист С, С++)");
+        list3.add(institution6);
+        Institution institution7 = new Institution(link3, LocalDate.of(1987, 9, 1)
+                , LocalDate.of(1993, 7, 1), null, "Инженер (программист Fortran, C)");
+        list3.add(institution7);
+        educationMap.put(link3, list3);
+
+        InstitutionSection institutionSection = new InstitutionSection(educationMap);
+        resume.setSection(SectionType.EDUCATION, institutionSection);
+    }
+
+    private void outputData(Resume resume) {
+        for (ContactType type : ContactType.values()) {
+            System.out.print(type.getTitle());
+            System.out.println(resume.getContact(type));
+        }
+        for (SectionType type : SectionType.values()) {
+            System.out.println();
+            System.out.println(type.getTitle());
+            System.out.println(resume.getSection(type) + " ");
+        }
+    }
+
+
+
+
 }
 
 

@@ -11,9 +11,9 @@ public class Institution {
     private String position;
     private String description;
 
-    public Institution(String url, String name, LocalDate startDate, LocalDate endDate, String position,
+    public Institution(HyperLink link, LocalDate startDate, LocalDate endDate, String position,
                        String description) {
-        this.homePage = new HyperLink(url, name);
+        this.homePage = link;
         this.startDate = startDate;
         this.endDate = endDate;
         this.position = position;
@@ -81,8 +81,6 @@ public class Institution {
     public String toString() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yyyy");
         StringBuilder sb = new StringBuilder();
-        sb.append(homePage.getLink() == null ? homePage.getText() + " " :
-                homePage.getLink() + " " + homePage.getText() + " ");
         sb.append(formatter.format(startDate)).append(" - ").append((endDate == null) ? "Сейчас" :
                 formatter.format(endDate) + " ");
         sb.append(position == null ? " " : " " + position + " ");
