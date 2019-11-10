@@ -29,14 +29,16 @@ public class MainFile {
         printFileNames(new File("."));
     }
 
-    public static void printFileNames(File directory) {
+    private static void printFileNames(File directory) {
         if (directory.isDirectory()) {
             File[] files = directory.listFiles();
-            for (File file : files) {
-                if (!file.isDirectory()) {
-                    System.out.println(file.toString());
-                } else {
-                    printFileNames(file);
+            if (files != null) {
+                for (File file : files) {
+                    if (!file.isDirectory()) {
+                        System.out.println(file.toString());
+                    } else {
+                        printFileNames(file);
+                    }
                 }
             }
         }
