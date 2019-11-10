@@ -8,27 +8,32 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 public class ResumeTestData {
-    private final Resume resume = new Resume("Григорий Кислин");
 
-    public Resume getResume() {
+    public static Resume getResume(String uuid, String fullName) {
+        Resume resume = new Resume(uuid, fullName);
+        setContact(resume);
+        setPersonal(resume);
+        setAchievement(resume);
+        setQualification(resume);
+        setWorkExperience(resume);
+        setEducationExperience(resume);
         return resume;
     }
 
     public static void main(String[] args) {
-        ResumeTestData testData = new ResumeTestData();
-        Resume resume = testData.getResume();
-        testData.setContact(resume);
-        testData.setPersonal(resume);
-        testData.setAchievement(resume);
-        testData.setQualification(resume);
-        testData.setWorkExperience(resume);
-        testData.setEducationExperience(resume);
+        Resume resume = new Resume("Григорий Кислин");
+        ResumeTestData.setContact(resume);
+        ResumeTestData.setPersonal(resume);
+        ResumeTestData.setAchievement(resume);
+        ResumeTestData.setQualification(resume);
+        ResumeTestData.setWorkExperience(resume);
+        ResumeTestData.setEducationExperience(resume);
         System.out.println(resume.getFullName());
         System.out.println();
-        testData.outputData(resume);
+        ResumeTestData.outputData(resume);
     }
 
-    private void setContact(Resume resume) {
+    private static void setContact(Resume resume) {
         resume.setContact(ContactType.PHONE, "+7(921) 855-0482");
         resume.setContact(ContactType.SKYPE, "grigory.kislin");
         resume.setContact(ContactType.EMAIL, "gkislin@yandex.ru");
@@ -38,7 +43,7 @@ public class ResumeTestData {
         resume.setContact(ContactType.HOMEPAGE, "http://gkislin.ru/");
     }
 
-    private void setPersonal(Resume resume) {
+    private static void setPersonal(Resume resume) {
         ArrayList<String> objective = new ArrayList<>();
         objective.add("Ведущий стажировок и корпоративного обучения по Java Web и Enterprise технологиям");
         ListSection objectiveSection = new ListSection(objective);
@@ -50,7 +55,7 @@ public class ResumeTestData {
         resume.setSection(SectionType.PERSONAL, personalSection);
     }
 
-    private void setAchievement(Resume resume) {
+    private static void setAchievement(Resume resume) {
         ArrayList<String> achievements = new ArrayList<>();
         achievements.add("С 2013 года: разработка проектов \"Разработка Web приложения\",\"Java Enterprise\", \"Многомодульный maven. Многопоточность. XML (JAXB/StAX). Веб сервисы (JAX-RS/SOAP). Удаленное взаимодействие (JMS/AKKA)\". Организация онлайн стажировок и ведение проектов. Более 1000 выпускников.");
         achievements.add("Реализация двухфакторной аутентификации для онлайн платформы управления проектами Wrike. " +
@@ -63,7 +68,7 @@ public class ResumeTestData {
         resume.setSection(SectionType.ACHIEVEMENT, achievementSection);
     }
 
-    private void setQualification(Resume resume) {
+    private static void setQualification(Resume resume) {
         ArrayList<String> qualifications = new ArrayList<>();
         qualifications.add("JEE AS: GlassFish (v2.1, v3), OC4J, JBoss, Tomcat, Jetty, WebLogic, WSO2");
         qualifications.add("Version control: Subversion, Git, Mercury, ClearCase, Perforce");
@@ -84,7 +89,7 @@ public class ResumeTestData {
         resume.setSection(SectionType.QUALIFICATIONS, qualificationSection);
     }
 
-    private void setWorkExperience(Resume resume) {
+    private static void setWorkExperience(Resume resume) {
         LinkedHashMap<HyperLink, List<Institution>> workMap = new LinkedHashMap<>();
 
         List<Institution> list1 = new ArrayList<>();
@@ -115,7 +120,7 @@ public class ResumeTestData {
         resume.setSection(SectionType.EXPERIENCE, institutionSection);
     }
 
-    private void setEducationExperience(Resume resume) {
+    private static void setEducationExperience(Resume resume) {
         LinkedHashMap<HyperLink, List<Institution>> educationMap = new LinkedHashMap<>();
 
         List<Institution> list1 = new ArrayList<>();
@@ -150,7 +155,7 @@ public class ResumeTestData {
         resume.setSection(SectionType.EDUCATION, institutionSection);
     }
 
-    private void outputData(Resume resume) {
+    private static void outputData(Resume resume) {
         for (ContactType type : ContactType.values()) {
             System.out.print(type.getTitle());
             System.out.println(resume.getContact(type));
