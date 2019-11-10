@@ -90,9 +90,9 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     public void clear() {
-        String[] listOfFiles = directory.list();
+        File[] listOfFiles = directory.listFiles();
         for (int i = 0; i < listOfFiles.length; i++) {
-            doDelete(new File(directory, listOfFiles[i]));
+            doDelete(listOfFiles[i]);
         }
     }
 
