@@ -80,24 +80,34 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     protected List<Resume> getList() {
-        String[] listOfFiles = directory.list();
+        File[] listOfFiles = directory.listFiles();
         ArrayList<Resume> resumes = new ArrayList<>();
-        for (int i = 0; i < listOfFiles.length; i++) {
-            resumes.add(doRead(new File(listOfFiles[i])));
+        if (listOfFiles != null) {
+            for (int i = 0; i < listOfFiles.length; i++) {
+                resumes.add(doRead(listOfFiles[i]));
+            }
+            return resumes;
         }
-        return resumes;
+        throw new StorageException("File storage does not exsist", "");
     }
 
     @Override
     public void clear() {
         File[] listOfFiles = directory.listFiles();
-        for (int i = 0; i < listOfFiles.length; i++) {
-            doDelete(listOfFiles[i]);
+        if (listOfFiles != null) {
+            for (int i = 0; i < listOfFiles.length; i++) {
+                doDelete(listOfFiles[i]);
+            }
         }
+        throw new StorageException("File storage does not exsist", "");
     }
 
     @Override
     public int size() {
-        return directory.list().length;
+        String[] listOfFileNames = directory.list();
+        if (listOfFileNames != null) {
+            return directory.list().length;
+        }
+        throw new StorageException("File storage does not exsist", "");
     }
 }
