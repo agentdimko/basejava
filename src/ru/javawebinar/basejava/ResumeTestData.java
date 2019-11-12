@@ -4,7 +4,6 @@ import ru.javawebinar.basejava.model.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 public class ResumeTestData {
@@ -90,68 +89,58 @@ public class ResumeTestData {
     }
 
     private static void setWorkExperience(Resume resume) {
-        LinkedHashMap<HyperLink, List<Institution>> workMap = new LinkedHashMap<>();
+        List<Institution> list = new ArrayList<>();
 
-        List<Institution> list1 = new ArrayList<>();
         HyperLink link1 = new HyperLink("http://javaops.ru/", "Java Online Projects");
-        Institution institution1 = new Institution(link1, LocalDate.of(2013, 10, 1),
+        Institution institution1 = new Institution(link1, new Institution.Position(LocalDate.of(2013, 10, 1),
                 null, "Автор проекта",
-                "Создание, организация и проведение Java онлайн проектов и стажировок.");
-        list1.add(institution1);
-        workMap.put(link1, list1);
+                "Создание, организация и проведение Java онлайн проектов и стажировок."));
+        list.add(institution1);
 
-        List<Institution> list2 = new ArrayList<>();
         HyperLink link2 = new HyperLink("https://www.wrike.com", "Wrike");
-        Institution institution2 = new Institution(link2, LocalDate.of(2014, 10, 1),
+        Institution institution2 = new Institution(link2, new Institution.Position(LocalDate.of(2014, 10, 1),
                 LocalDate.of(2016, 1, 1), "Старший разработчик (backend)",
-                "Проектирование и разработка онлайн платформы управления проектами Wrike (Java 8 API, Maven, Spring, MyBatis, Guava, Vaadin, PostgreSQL, Redis). Двухфакторная аутентификация, авторизация по OAuth1, OAuth2, JWT SSO.");
-        list2.add(institution2);
-        workMap.put(link2, list2);
+                "Проектирование и разработка онлайн платформы управления проектами Wrike (Java 8 API, Maven, Spring, " +
+                        "MyBatis, Guava, Vaadin, PostgreSQL, Redis). Двухфакторная аутентификация, авторизация по OAuth1, OAuth2, JWT SSO."));
+        list.add(institution2);
 
-        List<Institution> list3 = new ArrayList<>();
         HyperLink link3 = new HyperLink(null, "RIT Center");
-        Institution institution3 = new Institution(link3, LocalDate.of(2012, 04, 01),
+        Institution institution3 = new Institution(link3, new Institution.Position(LocalDate.of(2012, 04, 01),
                 LocalDate.of(2014, 10, 1),
-                "Java архитектор", "Организация процесса разработки системы ERP для разных окружений: релизная политика, версионирование, ведение CI (Jenkins), миграция базы (кастомизация Flyway), конфигурирование системы (pgBoucer, Nginx), AAA via SSO. Архитектура БД и серверной части системы. Разработка интергационных сервисов: CMIS, BPMN2, 1C (WebServices), сервисов общего назначения (почта, экспорт в pdf, doc, html). Интеграция Alfresco JLAN для online редактирование из браузера документов MS Office. Maven + plugin development, Ant, Apache Commons, Spring security, Spring MVC, Tomcat,WSO2, xcmis, OpenCmis, Bonita, Python scripting, Unix shell remote scripting via ssh tunnels, PL/Python");
-        list3.add(institution3);
-        workMap.put(link3, list3);
+                "Java архитектор", "Организация процесса разработки системы ERP для разных окружений: релизная " +
+                "политика, версионирование, ведение CI (Jenkins), миграция базы (кастомизация Flyway), конфигурирование системы (pgBoucer, Nginx), AAA via SSO. Архитектура БД и серверной части системы. Разработка интергационных сервисов: CMIS, BPMN2, 1C (WebServices), сервисов общего назначения (почта, экспорт в pdf, doc, html). Интеграция Alfresco JLAN для online редактирование из браузера документов MS Office. Maven + plugin development, Ant, Apache Commons, Spring security, Spring MVC, Tomcat,WSO2, xcmis, OpenCmis, Bonita, Python scripting, Unix shell remote scripting via ssh tunnels, PL/Python"));
+        list.add(institution3);
 
-        InstitutionSection institutionSection = new InstitutionSection(workMap);
+        InstitutionSection institutionSection = new InstitutionSection(list);
         resume.setSection(SectionType.EXPERIENCE, institutionSection);
     }
 
     private static void setEducationExperience(Resume resume) {
-        LinkedHashMap<HyperLink, List<Institution>> educationMap = new LinkedHashMap<>();
+        List<Institution> list = new ArrayList<>();
 
-        List<Institution> list1 = new ArrayList<>();
         HyperLink link1 = new HyperLink("https://www.coursera.org/course/progfun", "Coursera");
-        Institution institution4 = new Institution(link1, LocalDate.of(2013, 3, 1),
+        Institution institution1 = new Institution(link1, new Institution.Position(LocalDate.of(2013, 3, 1),
                 LocalDate.of(2013, 5, 1),
                 null,
-                "\"Functional Programming Principles in Scala\" by Martin Odersky");
-        list1.add(institution4);
-        educationMap.put(link1, list1);
+                "\"Functional Programming Principles in Scala\" by Martin Odersky"));
+        list.add(institution1);
 
-        List<Institution> list2 = new ArrayList<>();
         HyperLink link2 = new HyperLink("http://www.luxoft-training.ru/training/catalog/course.html?ID=22366",
                 "Luxoft");
-        Institution institution5 = new Institution(link2, LocalDate.of(2011, 3, 1), LocalDate.of(2011, 4, 1), null,
-                "Курс \"Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.\"");
-        list2.add(institution5);
-        educationMap.put(link2, list2);
+        Institution institution2 = new Institution(link2, new Institution.Position(LocalDate.of(2011, 3, 1), LocalDate.of(2011, 4, 1),
+                null,
+                "Курс \"Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.\""));
+        list.add(institution2);
 
-        List<Institution> list3 = new ArrayList<>();
         HyperLink link3 = new HyperLink("http://www.ifmo.ru/", "Санкт-Петербургский национальный " +
                 "исследовательский университет информационных технологий, механики и оптики");
-        Institution institution6 = new Institution(link3, LocalDate.of(1993, 9, 1)
-                , LocalDate.of(1996, 7, 1), null, "Аспирантура (программист С, С++)");
-        list3.add(institution6);
-        Institution institution7 = new Institution(link3, LocalDate.of(1987, 9, 1)
-                , LocalDate.of(1993, 7, 1), null, "Инженер (программист Fortran, C)");
-        list3.add(institution7);
-        educationMap.put(link3, list3);
+        Institution institution3 = new Institution(link3,
+                new Institution.Position(LocalDate.of(1993, 9, 1), LocalDate.of(1996, 7, 1), null, "Аспирантура (программист С, С++)"),
+                new Institution.Position(LocalDate.of(1987, 9, 1)
+                        , LocalDate.of(1993, 7, 1), null, "Инженер (программист Fortran, C)"));
+        list.add(institution3);
 
-        InstitutionSection institutionSection = new InstitutionSection(educationMap);
+        InstitutionSection institutionSection = new InstitutionSection(list);
         resume.setSection(SectionType.EDUCATION, institutionSection);
     }
 
@@ -166,8 +155,6 @@ public class ResumeTestData {
             System.out.println(resume.getSection(type) + " ");
         }
     }
-
-
 
 
 }
