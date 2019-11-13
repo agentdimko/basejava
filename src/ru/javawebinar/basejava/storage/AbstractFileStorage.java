@@ -14,7 +14,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     protected abstract void doWrite(Resume resume, File file) throws IOException;
 
-    protected abstract Resume doRead(File file);
+    protected abstract Resume doRead(File file) throws IOException;
 
     protected AbstractFileStorage(File directory) {
         Objects.requireNonNull(directory, "Directory must not be null");
@@ -43,7 +43,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
             try {
                 doWrite(resume, file);
             } catch (IOException e) {
-                throw new StorageException("Unable to update ", file.getName(), e);
+                throw new StorageException("Unable to update ", resume.getUuid(), e);
             }
         }
         throw new StorageException("File not found ", file.getName());
@@ -62,7 +62,11 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     @Override
     protected Resume doGet(File file) {
         if (file.exists()) {
-            return doRead(file);
+            try {
+                return doRead(file);
+            } catch (IOException e) {
+                throw new StorageException("File read error", file.getName(), e);
+            }
         }
         throw new StorageException("File not found", file.getName());
     }
@@ -81,14 +85,18 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     @Override
     protected List<Resume> getList() {
         File[] listOfFiles = directory.listFiles();
-        ArrayList<Resume> resumes = new ArrayList<>();
         if (listOfFiles != null) {
+            List<Resume> resumes = new ArrayList<>();
             for (File file : listOfFiles) {
-                resumes.add(doRead(file));
+                try {
+                    resumes.add(doRead(file));
+                } catch (IOException e) {
+                    throw new StorageException("File read error", file.getName(), e);
+                }
             }
             return resumes;
         }
-        throw new StorageException("File storage does not exsist", "");
+        throw new StorageException("Directory read error", null);
     }
 
     @Override
@@ -96,10 +104,9 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
         File[] listOfFiles = directory.listFiles();
         if (listOfFiles != null) {
             for (File file : listOfFiles) {
-                file.delete();
+                doDelete(file);
             }
         }
-        throw new StorageException("File storage does not exsist", "");
     }
 
     @Override
@@ -107,6 +114,6 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
         if (directory.list() != null) {
             return directory.list().length;
         }
-        throw new StorageException("File storage does not exsist", "");
+        throw new StorageException("Directory read error", null);
     }
 }
