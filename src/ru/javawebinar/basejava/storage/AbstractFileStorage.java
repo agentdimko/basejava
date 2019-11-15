@@ -11,9 +11,9 @@ import java.util.Objects;
 public abstract class AbstractFileStorage extends AbstractStorage<File> {
     private File directory;
 
-    protected abstract void doWrite(Resume resume, OutputStream file) throws IOException;
+    protected abstract void doWrite(Resume resume, OutputStream os) throws IOException;
 
-    protected abstract Resume doRead(InputStream file) throws IOException;
+    protected abstract Resume doRead(InputStream is) throws IOException;
 
     protected AbstractFileStorage(File directory) {
         Objects.requireNonNull(directory, "Directory must not be null");
@@ -38,14 +38,14 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     protected void doUpdate(File file, Resume resume) {
-        if (file.exists()) {
-            try {
-                doWrite(resume, new BufferedOutputStream(new FileOutputStream(file)));
-            } catch (IOException e) {
-                throw new StorageException("Unable to update ", resume.getUuid(), e);
-            }
+        if (!isExist(file)) {
+            throw new StorageException("File not found ", file.getName());
         }
-        throw new StorageException("File not found ", file.getName());
+        try {
+            doWrite(resume, new BufferedOutputStream(new FileOutputStream(file)));
+        } catch (IOException e) {
+            throw new StorageException("Unable to update ", resume.getUuid(), e);
+        }
     }
 
     @Override

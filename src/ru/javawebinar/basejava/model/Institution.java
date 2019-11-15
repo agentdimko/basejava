@@ -1,12 +1,15 @@
 package ru.javawebinar.basejava.model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class Institution {
+public class Institution implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private final HyperLink homePage;
     private final List<Position> positions;
 
@@ -17,7 +20,7 @@ public class Institution {
         this.positions = Arrays.asList(positions);
     }
 
-    public static class Position {
+    public static class Position implements Serializable {
         private LocalDate startDate;
         private LocalDate endDate;
         private String position;

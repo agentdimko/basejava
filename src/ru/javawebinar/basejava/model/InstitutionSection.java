@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class InstitutionSection implements Section {
+    private static final long serialVersionUID = 1L;
+
     private final List<Institution> items;
 
     public InstitutionSection(List<Institution> items) {
