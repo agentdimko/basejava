@@ -3,8 +3,7 @@ package ru.javawebinar.basejava.storage;
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -12,9 +11,9 @@ import java.util.Objects;
 public abstract class AbstractFileStorage extends AbstractStorage<File> {
     private File directory;
 
-    protected abstract void doWrite(Resume resume, File file) throws IOException;
+    protected abstract void doWrite(Resume resume, OutputStream file) throws IOException;
 
-    protected abstract Resume doRead(File file) throws IOException;
+    protected abstract Resume doRead(InputStream file) throws IOException;
 
     protected AbstractFileStorage(File directory) {
         Objects.requireNonNull(directory, "Directory must not be null");
@@ -41,7 +40,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     protected void doUpdate(File file, Resume resume) {
         if (file.exists()) {
             try {
-                doWrite(resume, file);
+                doWrite(resume, new BufferedOutputStream(new FileOutputStream(file)));
             } catch (IOException e) {
                 throw new StorageException("Unable to update ", resume.getUuid(), e);
             }
@@ -53,7 +52,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     protected void doSave(File file, Resume resume) {
         try {
             file.createNewFile();
-            doWrite(resume, file);
+            doWrite(resume, new BufferedOutputStream(new FileOutputStream(file)));
         } catch (IOException e) {
             throw new StorageException("Couldn't create file " + file.getAbsolutePath(), file.getName(), e);
         }
@@ -63,7 +62,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     protected Resume doGet(File file) {
         if (file.exists()) {
             try {
-                return doRead(file);
+                return doRead(new BufferedInputStream(new FileInputStream(file)));
             } catch (IOException e) {
                 throw new StorageException("File read error", file.getName(), e);
             }
@@ -85,7 +84,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
             List<Resume> resumes = new ArrayList<>();
             for (File file : listOfFiles) {
                 try {
-                    resumes.add(doRead(file));
+                    resumes.add(doRead(new BufferedInputStream(new FileInputStream(file))));
                 } catch (IOException e) {
                     throw new StorageException("File read error", file.getName(), e);
                 }
