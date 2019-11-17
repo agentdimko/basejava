@@ -8,22 +8,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class AbstractFileStorage extends AbstractStorage<File> {
+public class FileStorage extends AbstractStorage<File> {
     private File directory;
+    private SerializationStrategy strategy;
 
-    protected abstract void doWrite(Resume resume, OutputStream os) throws IOException;
-
-    protected abstract Resume doRead(InputStream is) throws IOException;
-
-    protected AbstractFileStorage(File directory) {
+    protected FileStorage(File directory, SerializationStrategy strategy) {
         Objects.requireNonNull(directory, "Directory must not be null");
+        Objects.requireNonNull(strategy, "Strategy must not be null");
+
         if (!directory.isDirectory()) {
             throw new IllegalArgumentException(directory.getAbsolutePath() + " is not directory ");
         }
         if (!directory.canRead() || !directory.canWrite()) {
             throw new IllegalArgumentException(directory.getAbsolutePath() + " is not readable/writable");
         }
+
         this.directory = directory;
+        this.strategy = strategy;
     }
 
     @Override
@@ -42,7 +43,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
             throw new StorageException("File not found ", file.getName());
         }
         try {
-            doWrite(resume, new BufferedOutputStream(new FileOutputStream(file)));
+            strategy.doWrite(resume, new BufferedOutputStream(new FileOutputStream(file)));
         } catch (IOException e) {
             throw new StorageException("Unable to update ", resume.getUuid(), e);
         }
@@ -52,7 +53,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     protected void doSave(File file, Resume resume) {
         try {
             file.createNewFile();
-            doWrite(resume, new BufferedOutputStream(new FileOutputStream(file)));
+            strategy.doWrite(resume, new BufferedOutputStream(new FileOutputStream(file)));
         } catch (IOException e) {
             throw new StorageException("Couldn't create file " + file.getAbsolutePath(), file.getName(), e);
         }
@@ -62,7 +63,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     protected Resume doGet(File file) {
         if (file.exists()) {
             try {
-                return doRead(new BufferedInputStream(new FileInputStream(file)));
+                return strategy.doRead(new BufferedInputStream(new FileInputStream(file)));
             } catch (IOException e) {
                 throw new StorageException("File read error", file.getName(), e);
             }
@@ -84,7 +85,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
             List<Resume> resumes = new ArrayList<>();
             for (File file : listOfFiles) {
                 try {
-                    resumes.add(doRead(new BufferedInputStream(new FileInputStream(file))));
+                    resumes.add(strategy.doRead(new BufferedInputStream(new FileInputStream(file))));
                 } catch (IOException e) {
                     throw new StorageException("File read error", file.getName(), e);
                 }

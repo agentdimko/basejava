@@ -11,16 +11,17 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public abstract class AbstractPathStorage extends AbstractStorage<Path> {
+public class PathStorage extends AbstractStorage<Path> {
     private Path directory;
+    private SerializationStrategy strategy;
 
-    protected abstract void doWrite(Resume resume, Path path) throws IOException;
+    protected PathStorage(String dir, SerializationStrategy strategy) {
+        Objects.requireNonNull(Paths.get(dir), "directory must not be null");
+        Objects.requireNonNull(strategy, "Strategy must not be null");
 
-    protected abstract Resume doRead(Path path) throws IOException;
-
-    protected AbstractPathStorage(String dir) {
         directory = Paths.get(dir);
-        Objects.requireNonNull(directory, "directory must not be null");
+        this.strategy = strategy;
+
         if (!Files.isDirectory(directory) || !(Files.isWritable(directory))) {
             throw new IllegalArgumentException(dir + " is not directory or is not writable");
         }
@@ -42,7 +43,7 @@ public abstract class AbstractPathStorage extends AbstractStorage<Path> {
             new StorageException("File not found", resume.getUuid());
         }
         try {
-            doWrite(resume, searchKey);
+            strategy.doWrite(resume, Files.newOutputStream(searchKey));
         } catch (IOException e) {
             throw new StorageException("Unable to write file", resume.getUuid(), e);
         }
@@ -52,7 +53,7 @@ public abstract class AbstractPathStorage extends AbstractStorage<Path> {
     protected void doSave(Path searchKey, Resume resume) {
         if (!isExist(searchKey)) {
             try {
-                doWrite(resume, searchKey);
+                strategy.doWrite(resume, Files.newOutputStream(searchKey));
             } catch (IOException e) {
                 throw new StorageException("Unable to write file", resume.getUuid(), e);
             }
@@ -63,7 +64,7 @@ public abstract class AbstractPathStorage extends AbstractStorage<Path> {
     protected Resume doGet(Path searchKey) {
         if (isExist(searchKey)) {
             try {
-                return doRead(searchKey);
+                return strategy.doRead(Files.newInputStream(searchKey));
             } catch (IOException e) {
                 throw new StorageException("Unable to read file", searchKey.getFileName().toString());
             }
@@ -87,7 +88,7 @@ public abstract class AbstractPathStorage extends AbstractStorage<Path> {
                     .filter(x -> !Files.isDirectory(x))
                     .map(path -> {
                         try {
-                            return doRead(path);
+                            return strategy.doRead(Files.newInputStream(path));
                         } catch (IOException e) {
                             throw new StorageException("Unable to read file" + path.getFileName(), null, e);
                         }
