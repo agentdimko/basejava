@@ -26,37 +26,29 @@ public class MainFile {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        printDirectoryDeeply(new File("."));
+        printDirectoryDeeply(new File("."), 0);
     }
 
 
-    private static void printDirectoryDeeply(File dir) {
-        File[] files = dir.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (file.isFile()) {
-                    System.out.println("  File: " + file.getName());
-                } else if (file.isDirectory()) {
-                    System.out.println("Directory: " + file.getName());
-                    printDirectoryDeeply(file);
+    private static void printDirectoryDeeply(File myFile, int depth) {
+        if (myFile.isDirectory()) {
+            System.out.println(getSpace(depth) + ">" + myFile.getName());
+            File[] list = myFile.listFiles();
+            if (list != null) {
+                for (File file : list) {
+                    printDirectoryDeeply(file, depth + 1);
                 }
-
             }
+        } else {
+            System.out.println(getSpace(depth) + "-" + myFile.getName());
         }
     }
 
-    private static void printFileNames(File directory) {
-        if (directory.isDirectory()) {
-            File[] files = directory.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    if (!file.isDirectory()) {
-                        System.out.println(" " + file.getName());
-                    } else {
-                        printFileNames(file);
-                    }
-                }
-            }
+    private static String getSpace(int depth) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < depth; i++) {
+            sb.append("  ");
         }
+        return sb.toString();
     }
 }
