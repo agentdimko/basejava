@@ -2,6 +2,7 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
+import ru.javawebinar.basejava.storage.serializer.StreamSerializer;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -10,11 +11,11 @@ import java.util.Objects;
 
 public class FileStorage extends AbstractStorage<File> {
     private File directory;
-    private SerializationStrategy strategy;
+    private StreamSerializer streamSerializer;
 
-    protected FileStorage(File directory, SerializationStrategy strategy) {
+    protected FileStorage(File directory, StreamSerializer streamSerializer) {
         Objects.requireNonNull(directory, "Directory must not be null");
-        Objects.requireNonNull(strategy, "Strategy must not be null");
+        Objects.requireNonNull(streamSerializer, "Strategy must not be null");
 
         if (!directory.isDirectory()) {
             throw new IllegalArgumentException(directory.getAbsolutePath() + " is not directory ");
@@ -24,7 +25,7 @@ public class FileStorage extends AbstractStorage<File> {
         }
 
         this.directory = directory;
-        this.strategy = strategy;
+        this.streamSerializer = streamSerializer;
     }
 
     @Override
@@ -43,7 +44,7 @@ public class FileStorage extends AbstractStorage<File> {
             throw new StorageException("File not found ", file.getName());
         }
         try {
-            strategy.doWrite(resume, new BufferedOutputStream(new FileOutputStream(file)));
+            streamSerializer.doWrite(resume, new BufferedOutputStream(new FileOutputStream(file)));
         } catch (IOException e) {
             throw new StorageException("Unable to update ", resume.getUuid(), e);
         }
@@ -53,7 +54,7 @@ public class FileStorage extends AbstractStorage<File> {
     protected void doSave(File file, Resume resume) {
         try {
             file.createNewFile();
-            strategy.doWrite(resume, new BufferedOutputStream(new FileOutputStream(file)));
+            streamSerializer.doWrite(resume, new BufferedOutputStream(new FileOutputStream(file)));
         } catch (IOException e) {
             throw new StorageException("Couldn't create file " + file.getAbsolutePath(), file.getName(), e);
         }
@@ -63,7 +64,7 @@ public class FileStorage extends AbstractStorage<File> {
     protected Resume doGet(File file) {
         if (file.exists()) {
             try {
-                return strategy.doRead(new BufferedInputStream(new FileInputStream(file)));
+                return streamSerializer.doRead(new BufferedInputStream(new FileInputStream(file)));
             } catch (IOException e) {
                 throw new StorageException("File read error", file.getName(), e);
             }
@@ -85,14 +86,14 @@ public class FileStorage extends AbstractStorage<File> {
             List<Resume> resumes = new ArrayList<>();
             for (File file : listOfFiles) {
                 try {
-                    resumes.add(strategy.doRead(new BufferedInputStream(new FileInputStream(file))));
+                    resumes.add(streamSerializer.doRead(new BufferedInputStream(new FileInputStream(file))));
                 } catch (IOException e) {
                     throw new StorageException("File read error", file.getName(), e);
                 }
             }
             return resumes;
         }
-        throw new StorageException("Directory read error", null);
+        throw new StorageException("Directory read error");
     }
 
     @Override
@@ -111,6 +112,6 @@ public class FileStorage extends AbstractStorage<File> {
         if (list != null) {
             return list.length;
         }
-        throw new StorageException("Directory read error", null);
+        throw new StorageException("Directory read error");
     }
 }
