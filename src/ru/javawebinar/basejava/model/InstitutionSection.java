@@ -1,12 +1,20 @@
 package ru.javawebinar.basejava.model;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class InstitutionSection implements Section {
+public class InstitutionSection extends Section {
     private static final long serialVersionUID = 1L;
 
-    private final List<Institution> items;
+    private List<Institution> items;
+
+    public InstitutionSection() {
+    }
+
+    public InstitutionSection(Institution... institutions) {
+        this(Arrays.asList(institutions));
+    }
 
     public InstitutionSection(List<Institution> items) {
         Objects.requireNonNull(items, "Items must not be null");
