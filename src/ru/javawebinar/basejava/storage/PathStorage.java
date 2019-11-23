@@ -5,6 +5,7 @@ import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.storage.serializer.StreamSerializer;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -46,7 +47,7 @@ public class PathStorage extends AbstractStorage<Path> {
             throw new StorageException("File not found", resume.getUuid());
         }
         try {
-            streamSerializer.doWrite(resume, Files.newOutputStream(path));
+            streamSerializer.doWrite(resume, new BufferedOutputStream(Files.newOutputStream(path)));
         } catch (IOException e) {
             throw new StorageException("Unable to write file", resume.getUuid(), e);
         }
@@ -54,25 +55,21 @@ public class PathStorage extends AbstractStorage<Path> {
 
     @Override
     protected void doSave(Path path, Resume resume) {
-        if (!isExist(path)) {
-            try {
-                streamSerializer.doWrite(resume, Files.newOutputStream(path));
-            } catch (IOException e) {
-                throw new StorageException("Unable to write file (file already exist)", resume.getUuid(), e);
-            }
+        try {
+            Files.createFile(path);
+        } catch (IOException e) {
+            throw new StorageException("Couldn't create path " + path, getFileName(path), e);
         }
+        doUpdate(path, resume);
     }
 
     @Override
     protected Resume doGet(Path path) {
-        if (isExist(path)) {
-            try {
-                return streamSerializer.doRead(new BufferedInputStream(Files.newInputStream(path)));
-            } catch (IOException e) {
-                throw new StorageException("Unable to read file", getFileName(path));
-            }
+        try {
+            return streamSerializer.doRead(new BufferedInputStream(Files.newInputStream(path)));
+        } catch (IOException e) {
+            throw new StorageException("Path read error", getFileName(path), e);
         }
-        throw new StorageException("File not found", getFileName(path));
     }
 
     @Override
@@ -86,14 +83,10 @@ public class PathStorage extends AbstractStorage<Path> {
 
     @Override
     protected List<Resume> getList() {
-        try {
-            return Files.list(directory)
-                    .filter(x -> !Files.isDirectory(x))
-                    .map(this::doGet)
-                    .collect(Collectors.toList());
-        } catch (IOException e) {
-            throw new StorageException("IO error", null, e);
-        }
+        return getFilesList()
+                .filter(x -> !Files.isDirectory(x))
+                .map(this::doGet)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -103,13 +96,9 @@ public class PathStorage extends AbstractStorage<Path> {
 
     @Override
     public int size() {
-        try {
-            return (int) Files.list(directory)
-                    .filter(x -> !Files.isDirectory(x))
-                    .count();
-        } catch (IOException e) {
-            throw new StorageException("Directory read  error", e);
-        }
+        return (int) getFilesList()
+                .filter(x -> !Files.isDirectory(x))
+                .count();
     }
 
     private String getFileName(Path path) {

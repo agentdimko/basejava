@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public abstract class AbstractStorageTest {
     protected static File STORAGE_DIR = new File("storage");
@@ -58,7 +59,7 @@ public abstract class AbstractStorageTest {
                         new Institution("Institution2", "http://Institution2.ru",
                                 new Institution.Position(2015, Month.JANUARY, "position1", "content1"))));
     }
-    
+
 
     protected AbstractStorageTest(Storage storage) {
         this.storage = storage;
@@ -67,22 +68,22 @@ public abstract class AbstractStorageTest {
     @Before
     public void setUp() throws Exception {
         storage.clear();
-        storage.save(RESUME_3);
         storage.save(RESUME_1);
         storage.save(RESUME_2);
-
+        storage.save(RESUME_3);
     }
 
     @Test
     public void clear() {
         storage.clear();
-        assertEquals(0, storage.size());
+        assertSize(0);
     }
 
     @Test
-    public void updateExist() {
-        storage.update(RESUME_1);
-        assertGet(RESUME_1);
+    public void updateExist() throws Exception {
+        Resume newResume = new Resume(UUID_1, "New Name");
+        storage.update(newResume);
+        assertTrue(newResume.equals(storage.get(UUID_1)));
     }
 
     @Test(expected = NotExistStorageException.class)
@@ -99,7 +100,7 @@ public abstract class AbstractStorageTest {
     public void saveNotExist() {
         storage.save(DUMMY_RESUME);
         assertGet(DUMMY_RESUME);
-        assertEquals(4, storage.size());
+        assertSize(4);
     }
 
     @Test
@@ -127,15 +128,20 @@ public abstract class AbstractStorageTest {
     }
 
     @Test
-    public void getAllSortedTest() {
-        List<Resume> resumes = storage.getAllSorted();
-        assertSize(3);
-        assertEquals(Arrays.asList(RESUME_1, RESUME_2, RESUME_3), resumes);
+//    public void getAllSortedTest() {
+//        List<Resume> resumes = storage.getAllSorted();
+//        assertSize(3);
+//        assertEquals(Arrays.asList(RESUME_1, RESUME_2, RESUME_3), resumes);
+//    }
+    public void getAllSortedTest() throws Exception {
+        List<Resume> list = storage.getAllSorted();
+        assertEquals(3, list.size());
+        assertEquals(list, Arrays.asList(RESUME_1, RESUME_2, RESUME_3));
     }
 
     @Test
     public void size() {
-        assertEquals(3, storage.size());
+        assertSize(3);
     }
 
     private void assertSize(int size) {

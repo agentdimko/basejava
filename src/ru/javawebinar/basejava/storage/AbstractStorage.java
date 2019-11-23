@@ -58,7 +58,6 @@ public abstract class AbstractStorage<SK> implements Storage {
     public List<Resume> getAllSorted() {
         LOG.info("getAllSorted");
         List<Resume> list = getList();
-//        list.sort(Resume::compareTo);
         Collections.sort(list);
         return list;
     }

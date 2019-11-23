@@ -23,8 +23,8 @@ public class Resume implements Comparable<Resume>, Serializable {
     private String uuid;
     private String fullName;
 
-    private Map<ContactType, String> contacts;
-    private Map<SectionType, Section> sections;
+    private final Map<ContactType, String> contacts = new EnumMap<>(ContactType.class);
+    private final Map<SectionType, Section> sections = new EnumMap<>(SectionType.class);
 
     public Resume() {
 
@@ -39,8 +39,6 @@ public class Resume implements Comparable<Resume>, Serializable {
         checkParameters(uuid, fullName);
         this.uuid = uuid;
         this.fullName = fullName.trim();
-        contacts = new EnumMap<>(ContactType.class);
-        sections = new EnumMap<>(SectionType.class);
     }
 
     public String getUuid() {
@@ -51,27 +49,50 @@ public class Resume implements Comparable<Resume>, Serializable {
         return fullName;
     }
 
-    public String getContact(ContactType key) {
-        return contacts.get(key);
+    public String getContact(ContactType type) {
+        return contacts.get(type);
     }
 
-    public void addContact(ContactType key, String text) {
-        contacts.put(key, text);
+    public void addContact(ContactType type, String value) {
+        contacts.put(type, value);
     }
 
-    public Section getSection(SectionType key) {
-        return sections.get(key);
+    public Section getSection(SectionType type) {
+        return sections.get(type);
     }
 
     public void addSection(SectionType key, Section value) {
         sections.put(key, value);
     }
 
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//        Resume resume = (Resume) o;
+//        return Objects.equals(uuid, resume.uuid) &&
+//                Objects.equals(fullName, resume.fullName)
+//                &&
+//                Objects.equals(contacts, resume.contacts) &&
+//                Objects.equals(sections, resume.sections);
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(uuid, fullName, contacts, sections);
+//    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Resume resume = (Resume) o;
+        boolean b = Objects.equals(uuid, resume.uuid) &&
+                Objects.equals(fullName, resume.fullName) &&
+                Objects.equals(contacts, resume.contacts) &&
+                Objects.equals(sections, resume.sections);
+        System.out.println("***********" + b);
         return Objects.equals(uuid, resume.uuid) &&
                 Objects.equals(fullName, resume.fullName) &&
                 Objects.equals(contacts, resume.contacts) &&
@@ -85,7 +106,12 @@ public class Resume implements Comparable<Resume>, Serializable {
 
     @Override
     public String toString() {
-        return uuid + '(' + fullName + ')';
+        return "Resume{" +
+                "uuid='" + uuid + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", contacts=" + contacts +
+                ", sections=" + sections +
+                '}';
     }
 
     @Override
