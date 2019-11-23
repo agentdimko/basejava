@@ -41,12 +41,21 @@ public class Resume implements Comparable<Resume>, Serializable {
         this.fullName = fullName.trim();
     }
 
+
     public String getUuid() {
         return uuid;
     }
 
     public String getFullName() {
         return fullName;
+    }
+
+    public Map<ContactType, String> getContacts() {
+        return contacts;
+    }
+
+    public Map<SectionType, Section> getSections() {
+        return sections;
     }
 
     public String getContact(ContactType type) {
@@ -64,24 +73,6 @@ public class Resume implements Comparable<Resume>, Serializable {
     public void addSection(SectionType key, Section value) {
         sections.put(key, value);
     }
-
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null || getClass() != o.getClass()) return false;
-//        Resume resume = (Resume) o;
-//        return Objects.equals(uuid, resume.uuid) &&
-//                Objects.equals(fullName, resume.fullName)
-//                &&
-//                Objects.equals(contacts, resume.contacts) &&
-//                Objects.equals(sections, resume.sections);
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(uuid, fullName, contacts, sections);
-//    }
-
 
     @Override
     public boolean equals(Object o) {
