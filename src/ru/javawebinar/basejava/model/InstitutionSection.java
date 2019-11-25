@@ -21,7 +21,7 @@ public class InstitutionSection extends Section {
         this.items = items;
     }
 
-    public List<Institution> getStorage() {
+    public List<Institution> getItems() {
         return items;
     }
 

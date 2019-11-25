@@ -54,7 +54,7 @@ public abstract class AbstractStorageTest {
                         new Institution("Institution12", "http://Institution12.ru")));
         RESUME_2.addContact(ContactType.SKYPE, "skype2");
         RESUME_2.addContact(ContactType.PHONE, "22222");
-        RESUME_1.addSection(SectionType.EXPERIENCE,
+        RESUME_2.addSection(SectionType.EXPERIENCE,
                 new InstitutionSection(
                         new Institution("Institution2", "http://Institution2.ru",
                                 new Institution.Position(2015, Month.JANUARY, "position1", "content1"))));
@@ -127,12 +127,7 @@ public abstract class AbstractStorageTest {
         storage.delete(DUMMY);
     }
 
-    @Test
-//    public void getAllSortedTest() {
-//        List<Resume> resumes = storage.getAllSorted();
-//        assertSize(3);
-//        assertEquals(Arrays.asList(RESUME_1, RESUME_2, RESUME_3), resumes);
-//    }
+
     public void getAllSortedTest() throws Exception {
         List<Resume> list = storage.getAllSorted();
         assertEquals(3, list.size());

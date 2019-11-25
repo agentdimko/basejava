@@ -38,6 +38,18 @@ public class Institution implements Serializable {
         this.positions = positions;
     }
 
+    public HyperLink getHomePage() {
+        return homePage;
+    }
+
+    public void setHomePage(HyperLink homePage) {
+        this.homePage = homePage;
+    }
+
+    public List<Position> getPositions() {
+        return positions;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
