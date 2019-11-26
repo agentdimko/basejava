@@ -28,6 +28,8 @@ public class DataStreamSerializer implements StreamSerializer {
                 switch (type) {
                     case OBJECTIVE:
                     case PERSONAL:
+                        writeTextSection(type, dos, sections);
+                        break;
                     case ACHIEVEMENT:
                     case QUALIFICATIONS:
                         writeListSection(type, dos, sections);
@@ -43,6 +45,7 @@ public class DataStreamSerializer implements StreamSerializer {
         }
     }
 
+
     @Override
     public Resume doRead(InputStream is) throws IOException {
         try (DataInputStream dis = new DataInputStream(is)) {
@@ -53,22 +56,22 @@ public class DataStreamSerializer implements StreamSerializer {
                 resume.addContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
             }
 
-            for (SectionType type : SectionType.values()) {
+            while (dis.available() > 0) {
+                String type = dis.readUTF();
                 switch (type) {
-                    case OBJECTIVE:
-                    case PERSONAL:
-                    case ACHIEVEMENT:
-                    case QUALIFICATIONS:
-                        ListSection listSection = readListSection(type, dis, resume);
-                        if (listSection != null) {
-                            resume.addSection(type, listSection);
-                        }
+                    case "OBJECTIVE":
+                    case "PERSONAL":
+                        resume.addSection(SectionType.valueOf(type), new TextSection(dis.readUTF()));
                         break;
-                    case EXPERIENCE:
-                    case EDUCATION:
-                        InstitutionSection institutionSection = readInstitutionSection(type, dis, resume);
-                        if (institutionSection != null)
-                            resume.addSection(type, institutionSection);
+                    case "ACHIEVEMENT":
+                    case "QUALIFICATIONS":
+                        ListSection listSection = readListSection(dis);
+                        resume.addSection(SectionType.valueOf(type), listSection);
+                        break;
+                    case "EXPERIENCE":
+                    case "EDUCATION":
+                        InstitutionSection institutionSection = readInstitutionSection(dis);
+                        resume.addSection(SectionType.valueOf(type), institutionSection);
                         break;
                     default:
                         break;
@@ -78,12 +81,30 @@ public class DataStreamSerializer implements StreamSerializer {
         }
     }
 
+    private void writeTextSection(SectionType type, DataOutputStream dos, Map<SectionType, Section> sections) throws IOException {
+        if (sections.get(type) == null) {
+            return;
+        }
+        dos.writeUTF(type.name());
+        TextSection textSection = (TextSection) sections.get(type);
+        dos.writeUTF(textSection.getContent());
+    }
+
+    private TextSection readTextSection(SectionType type, DataInputStream dis, Resume resume) throws IOException {
+        TextSection textSection = null;
+        String sectionName = dis.readUTF();
+        if (sectionName.equals("OBJECTIVE") || sectionName.equals("PERSONAL")) {
+            textSection = new TextSection(dis.readUTF());
+        }
+        return textSection;
+    }
+
     private void writeListSection(SectionType type, DataOutputStream dos, Map<SectionType, Section> sections) throws IOException {
         if (sections.get(type) == null) {
-            dos.writeInt(0);
             return;
         }
 
+        dos.writeUTF(type.name());
         ListSection listSection = (ListSection) sections.get(type);
         int size = listSection.getItems().size();
         dos.writeInt(size);
@@ -93,12 +114,8 @@ public class DataStreamSerializer implements StreamSerializer {
 
     }
 
-    private ListSection readListSection(SectionType type, DataInputStream dis, Resume resume) throws IOException {
+    private ListSection readListSection(DataInputStream dis) throws IOException {
         int sectionSize = dis.readInt();
-        if (sectionSize == 0) {
-            return null;
-        }
-
         List<String> list = new ArrayList<>();
         for (int i = 0; i < sectionSize; i++) {
             list.add(dis.readUTF());
@@ -109,10 +126,9 @@ public class DataStreamSerializer implements StreamSerializer {
     private void writeInstitutionSection(SectionType type, DataOutputStream dos, Map<SectionType, Section> sections)
             throws IOException {
         if (sections.get(type) == null) {
-            dos.writeInt(0);
             return;
         }
-
+        dos.writeUTF(type.name());
         InstitutionSection institutionSection = (InstitutionSection) sections.get(type);
         int sectionSize = institutionSection.getItems().size();
         dos.writeInt(sectionSize);
@@ -138,13 +154,8 @@ public class DataStreamSerializer implements StreamSerializer {
         }
     }
 
-
-    private InstitutionSection readInstitutionSection(SectionType type, DataInputStream dis, Resume resume) throws IOException {
+    private InstitutionSection readInstitutionSection(DataInputStream dis) throws IOException {
         int sectionSize = dis.readInt();
-        if (sectionSize == 0) {
-            return null;
-        }
-
         List<Institution> institutions = new ArrayList<>();
         for (int i = 0; i < sectionSize; i++) {
             String link = dis.readUTF();
