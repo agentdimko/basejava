@@ -25,21 +25,23 @@ public class DataStreamSerializer implements StreamSerializer {
 
             Map<SectionType, Section> sections = resume.getSections();
             for (SectionType type : SectionType.values()) {
-                switch (type) {
-                    case OBJECTIVE:
-                    case PERSONAL:
-                        writeTextSection(type, dos, sections);
-                        break;
-                    case ACHIEVEMENT:
-                    case QUALIFICATIONS:
-                        writeListSection(type, dos, sections);
-                        break;
-                    case EXPERIENCE:
-                    case EDUCATION:
-                        writeInstitutionSection(type, dos, sections);
-                        break;
-                    default:
-                        break;
+                if (sections.get(type) != null) {
+                    switch (type) {
+                        case OBJECTIVE:
+                        case PERSONAL:
+                            writeTextSection(type, dos, sections);
+                            break;
+                        case ACHIEVEMENT:
+                        case QUALIFICATIONS:
+                            writeListSection(type, dos, sections);
+                            break;
+                        case EXPERIENCE:
+                        case EDUCATION:
+                            writeInstitutionSection(type, dos, sections);
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
         }
@@ -82,28 +84,12 @@ public class DataStreamSerializer implements StreamSerializer {
     }
 
     private void writeTextSection(SectionType type, DataOutputStream dos, Map<SectionType, Section> sections) throws IOException {
-        if (sections.get(type) == null) {
-            return;
-        }
         dos.writeUTF(type.name());
         TextSection textSection = (TextSection) sections.get(type);
         dos.writeUTF(textSection.getContent());
     }
 
-    private TextSection readTextSection(SectionType type, DataInputStream dis, Resume resume) throws IOException {
-        TextSection textSection = null;
-        String sectionName = dis.readUTF();
-        if (sectionName.equals("OBJECTIVE") || sectionName.equals("PERSONAL")) {
-            textSection = new TextSection(dis.readUTF());
-        }
-        return textSection;
-    }
-
     private void writeListSection(SectionType type, DataOutputStream dos, Map<SectionType, Section> sections) throws IOException {
-        if (sections.get(type) == null) {
-            return;
-        }
-
         dos.writeUTF(type.name());
         ListSection listSection = (ListSection) sections.get(type);
         int size = listSection.getItems().size();
@@ -125,9 +111,6 @@ public class DataStreamSerializer implements StreamSerializer {
 
     private void writeInstitutionSection(SectionType type, DataOutputStream dos, Map<SectionType, Section> sections)
             throws IOException {
-        if (sections.get(type) == null) {
-            return;
-        }
         dos.writeUTF(type.name());
         InstitutionSection institutionSection = (InstitutionSection) sections.get(type);
         int sectionSize = institutionSection.getItems().size();
@@ -136,7 +119,7 @@ public class DataStreamSerializer implements StreamSerializer {
             if (institution.getHomePage().getLink() != null) {
                 dos.writeUTF(institution.getHomePage().getLink());
             } else {
-                dos.writeUTF("null");
+                dos.writeUTF("");
             }
             dos.writeUTF(institution.getHomePage().getText());
             int positionSize = institution.getPositions().size();
@@ -148,7 +131,7 @@ public class DataStreamSerializer implements StreamSerializer {
                 if (position.getDescription() != null) {
                     dos.writeUTF(position.getDescription());
                 } else {
-                    dos.writeUTF("null");
+                    dos.writeUTF("");
                 }
             }
         }
@@ -159,7 +142,7 @@ public class DataStreamSerializer implements StreamSerializer {
         List<Institution> institutions = new ArrayList<>();
         for (int i = 0; i < sectionSize; i++) {
             String link = dis.readUTF();
-            link = link.equals("null") ? null : link;
+            link = link.isEmpty() ? null : link;
             String text = dis.readUTF();
             HyperLink hyperLink = new HyperLink(link, text);
             int positionSize = dis.readInt();
@@ -169,7 +152,7 @@ public class DataStreamSerializer implements StreamSerializer {
                 LocalDate endDate = LocalDate.parse(dis.readUTF());
                 String title = dis.readUTF();
                 String description = dis.readUTF();
-                description = description.equals("null") ? null : description;
+                description = description.isEmpty() ? null : description;
                 positions.add(new Institution.Position(startDate, endDate, title, description));
             }
             institutions.add(new Institution(hyperLink, positions));
