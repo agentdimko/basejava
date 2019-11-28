@@ -24,10 +24,9 @@ public class DataStreamSerializer implements StreamSerializer {
             }
 
             Map<SectionType, Section> sections = resume.getSections();
-
             for (Map.Entry<SectionType, Section> entry : sections.entrySet()) {
                 SectionType type = entry.getKey();
-                dos.writeUTF(entry.getKey().name());
+                dos.writeUTF(type.name());
                 Section section = sections.get(type);
                 switch (type) {
                     case OBJECTIVE:
