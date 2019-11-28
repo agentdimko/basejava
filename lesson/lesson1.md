@@ -30,7 +30,7 @@
 - [Что такое JDK? Введение в средства разработки Java](https://topjava.ru/blog/what-is-the-jdk)
 - [Что такое JRE? Введение в среду выполнения Java](https://topjava.ru/blog/what-is-the-jre)
 - [Что такое Java? История создания](http://www.intuit.ru/studies/courses/16/16/lecture/27105)
-- [Programming languages TIOBE Index](http://www.tiobe.com/index.php/text/paperinfo/tpci/index.html)
+- [Programming languages TIOBE Index](http://www.tiobe.com/index.php/content/paperinfo/tpci/index.html)
 
 ![jvm](https://cloud.githubusercontent.com/assets/18701152/15219296/e6c67e86-186b-11e6-986f-651a87deec6c.png)
 
