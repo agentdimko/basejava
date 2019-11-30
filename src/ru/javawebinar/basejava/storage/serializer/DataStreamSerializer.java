@@ -5,8 +5,10 @@ import ru.javawebinar.basejava.model.*;
 import java.io.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
 
 public class DataStreamSerializer implements StreamSerializer {
 
@@ -17,136 +19,125 @@ public class DataStreamSerializer implements StreamSerializer {
             dos.writeUTF(resume.getFullName());
 
             Map<ContactType, String> contacts = resume.getContacts();
-            dos.writeInt(contacts.size());
-            for (Map.Entry<ContactType, String> entry : contacts.entrySet()) {
+
+            writeCollection(dos, contacts.entrySet(), entry -> {
                 dos.writeUTF(entry.getKey().name());
                 dos.writeUTF(entry.getValue());
-            }
+            });
 
-            Map<SectionType, Section> sections = resume.getSections();
-            for (Map.Entry<SectionType, Section> entry : sections.entrySet()) {
+            writeCollection(dos, resume.getSections().entrySet(), entry -> {
                 SectionType type = entry.getKey();
+                Section section = entry.getValue();
                 dos.writeUTF(type.name());
-                Section section = sections.get(type);
                 switch (type) {
                     case OBJECTIVE:
                     case PERSONAL:
-                        writeTextSection(((TextSection) section).getContent(), dos);
+                        dos.writeUTF(((TextSection) section).getContent());
                         break;
                     case ACHIEVEMENT:
                     case QUALIFICATIONS:
-                        writeListSection(((ListSection) section).getItems(), dos);
+                        writeCollection(dos, ((ListSection) section).getItems(), item -> {
+                            dos.writeUTF(item);
+                        });
                         break;
                     case EXPERIENCE:
                     case EDUCATION:
-                        writeInstitutionSection(((InstitutionSection) section).getItems(), dos);
+                        writeCollection(dos, ((InstitutionSection) section).getItems(), item -> {
+                            if (item.getHomePage().getLink() != null) {
+                                dos.writeUTF(item.getHomePage().getLink());
+                            } else {
+                                dos.writeUTF("");
+                            }
+                            dos.writeUTF(item.getHomePage().getText());
+
+                            writeCollection(dos, item.getPositions(), position -> {
+                                dos.writeUTF(position.getStartDate().toString());
+                                dos.writeUTF(position.getEndDate().toString());
+                                dos.writeUTF(position.getTitle());
+                                if (position.getDescription() != null) {
+                                    dos.writeUTF(position.getDescription());
+                                } else {
+                                    dos.writeUTF("");
+                                }
+                            });
+                        });
                         break;
                     default:
                         break;
                 }
-            }
+            });
         }
     }
 
+    private <E> void writeCollection(DataOutputStream dos, Collection<E> collection, ItemWriter<E> itemWriter) throws IOException {
+        dos.writeInt(collection.size());
+        for (E element : collection) {
+            itemWriter.write(element);
+        }
+    }
 
     @Override
     public Resume doRead(InputStream is) throws IOException {
         try (DataInputStream dis = new DataInputStream(is)) {
             Resume resume = new Resume(dis.readUTF(), dis.readUTF());
 
-            int size = dis.readInt();
-            for (int i = 0; i < size; i++) {
+            readItems(dis, () -> {
                 resume.addContact(ContactType.valueOf(dis.readUTF()), dis.readUTF());
-            }
+            });
 
-            while (dis.available() > 0) {
+            readItems(dis, () -> {
                 SectionType type = SectionType.valueOf(dis.readUTF());
-                switch (type) {
-                    case OBJECTIVE:
-                    case PERSONAL:
-                        resume.addSection(type, new TextSection(dis.readUTF()));
-                        break;
-                    case ACHIEVEMENT:
-                    case QUALIFICATIONS:
-                        resume.addSection(type, readListSection(dis));
-                        break;
-                    case EXPERIENCE:
-                    case EDUCATION:
-                        resume.addSection(type, readInstitutionSection(dis));
-                        break;
-                    default:
-                        break;
-                }
-            }
+                resume.addSection(type, readSection(dis, type));
+            });
             return resume;
         }
     }
 
-    private void writeTextSection(String content, DataOutputStream dos) throws IOException {
-        dos.writeUTF(content);
-    }
-
-    private void writeListSection(List<String> items, DataOutputStream dos) throws IOException {
-        dos.writeInt(items.size());
-        for (String s : items) {
-            dos.writeUTF(s);
+    private void readItems(DataInputStream dis, ItemHandler itemHandler) throws IOException {
+        int size = dis.readInt();
+        for (int i = 0; i < size; i++) {
+            itemHandler.handle();
         }
     }
 
-    private ListSection readListSection(DataInputStream dis) throws IOException {
-        int sectionSize = dis.readInt();
-        List<String> list = new ArrayList<>();
-        for (int i = 0; i < sectionSize; i++) {
-            list.add(dis.readUTF());
-        }
-        return new ListSection(list);
-    }
-
-    private void writeInstitutionSection(List<Institution> items, DataOutputStream dos)
-            throws IOException {
-        dos.writeInt(items.size());
-        for (Institution institution : items) {
-            if (institution.getHomePage().getLink() != null) {
-                dos.writeUTF(institution.getHomePage().getLink());
-            } else {
-                dos.writeUTF("");
-            }
-            dos.writeUTF(institution.getHomePage().getText());
-            int positionSize = institution.getPositions().size();
-            dos.writeInt(positionSize);
-            for (Institution.Position position : institution.getPositions()) {
-                dos.writeUTF(position.getStartDate().toString());
-                dos.writeUTF(position.getEndDate().toString());
-                dos.writeUTF(position.getTitle());
-                if (position.getDescription() != null) {
-                    dos.writeUTF(position.getDescription());
-                } else {
-                    dos.writeUTF("");
-                }
-            }
+    private Section readSection(DataInputStream dis, SectionType type) throws IOException {
+        switch (type) {
+            case OBJECTIVE:
+            case PERSONAL:
+                return new TextSection(dis.readUTF());
+            case ACHIEVEMENT:
+            case QUALIFICATIONS:
+                return new ListSection(readList(dis, dis::readUTF));
+            case EXPERIENCE:
+            case EDUCATION:
+                return new InstitutionSection(readList(dis, () -> {
+                    String link = dis.readUTF();
+                    link = link.isEmpty() ? null : link;
+                    String text = dis.readUTF();
+                    HyperLink hyperLink = new HyperLink(link, text);
+                    int positionSize = dis.readInt();
+                    List<Institution.Position> positions = new ArrayList<>();
+                    for (int j = 0; j < positionSize; j++) {
+                        LocalDate startDate = LocalDate.parse(dis.readUTF());
+                        LocalDate endDate = LocalDate.parse(dis.readUTF());
+                        String title = dis.readUTF();
+                        String description = dis.readUTF();
+                        description = description.isEmpty() ? null : description;
+                        positions.add(new Institution.Position(startDate, endDate, title, description));
+                    }
+                    return new Institution(hyperLink, positions);
+                }));
+            default:
+                throw new IllegalStateException();
         }
     }
 
-    private InstitutionSection readInstitutionSection(DataInputStream dis) throws IOException {
-        int sectionSize = dis.readInt();
-        List<Institution> institutions = new ArrayList<>();
-        for (int i = 0; i < sectionSize; i++) {
-            String link = dis.readUTF();
-            link = link.isEmpty() ? null : link;
-            String text = dis.readUTF();
-            HyperLink hyperLink = new HyperLink(link, text);
-            int positionSize = dis.readInt();
-            List<Institution.Position> positions = new ArrayList<>();
-            for (int j = 0; j < positionSize; j++) {
-                LocalDate startDate = LocalDate.parse(dis.readUTF());
-                LocalDate endDate = LocalDate.parse(dis.readUTF());
-                String title = dis.readUTF();
-                String description = dis.readUTF();
-                description = description.isEmpty() ? null : description;
-                positions.add(new Institution.Position(startDate, endDate, title, description));
-            }
-            institutions.add(new Institution(hyperLink, positions));
+    private <E> List<E> readList(DataInputStream dis, ItemHReader<E> reader) throws IOException {
+        int size = dis.readInt();
+        List<E> list = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            list.add(reader.read());
         }
-        return new InstitutionSection(institutions);
+        return list;
     }
 }
