@@ -36,9 +36,7 @@ public class DataStreamSerializer implements StreamSerializer {
                         break;
                     case ACHIEVEMENT:
                     case QUALIFICATIONS:
-                        writeCollection(dos, ((ListSection) section).getItems(), item -> {
-                            dos.writeUTF(item);
-                        });
+                        writeCollection(dos, ((ListSection) section).getItems(), dos::writeUTF);
                         break;
                     case EXPERIENCE:
                     case EDUCATION:
@@ -115,17 +113,14 @@ public class DataStreamSerializer implements StreamSerializer {
                     link = link.isEmpty() ? null : link;
                     String text = dis.readUTF();
                     HyperLink hyperLink = new HyperLink(link, text);
-                    int positionSize = dis.readInt();
-                    List<Institution.Position> positions = new ArrayList<>();
-                    for (int j = 0; j < positionSize; j++) {
+                    return new Institution(hyperLink, readList(dis, () -> {
                         LocalDate startDate = LocalDate.parse(dis.readUTF());
                         LocalDate endDate = LocalDate.parse(dis.readUTF());
                         String title = dis.readUTF();
                         String description = dis.readUTF();
                         description = description.isEmpty() ? null : description;
-                        positions.add(new Institution.Position(startDate, endDate, title, description));
-                    }
-                    return new Institution(hyperLink, positions);
+                        return new Institution.Position(startDate, endDate, title, description);
+                    }));
                 }));
             default:
                 throw new IllegalStateException();
