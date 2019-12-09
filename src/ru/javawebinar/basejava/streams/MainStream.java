@@ -31,32 +31,14 @@ public class MainStream {
     }
 
     public int minValue(int[] values) {
-        int[] resultArray = Arrays.stream(values).distinct().sorted().toArray();
-        int length = resultArray.length;
-
-        if (length == 1) {
-            return resultArray[0];
-        }
-
-        int result = 0;
-        int power = length - 1;
-
-        for (int i : resultArray) {
-            result += i * Math.pow(10, power);
-            power--;
-        }
-        return result;
+        return Arrays.stream(values).distinct().sorted().reduce((a, b) -> {
+            return a * 10 + b;
+        }).orElse(0);
     }
 
     private List<Integer> oddOrEven(List<Integer> integers) {
-
         int summ = integers.stream().reduce(0, (integer, integer2) -> integer + integer2);
 
-        if (summ % 2 == 0) {
-            return integers.stream().filter(element -> element % 2 == 0).collect(Collectors.toList());
-        } else {
-            return integers.stream().filter(element -> element % 2 != 0).collect(Collectors.toList());
-        }
-
+        return integers.stream().filter(element -> summ % 2 == element % 2).collect(Collectors.toList());
     }
 }
