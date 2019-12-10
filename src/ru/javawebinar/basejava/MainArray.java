@@ -20,7 +20,7 @@ public class MainArray {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         Resume resume;
         while (true) {
-            System.out.print("Введите одну из команд - (list | save uuid | delete uuid | update uuid | get uuid | " +
+            System.out.print("Введите одну из команд - (list | save uuid | delete uuid | update uuid | getInstance uuid | " +
                     "clear | exit): ");
             String[] params = reader.readLine().trim().toLowerCase().split(" ");
             if (params.length < 1 || params.length > 2) {
@@ -52,7 +52,7 @@ public class MainArray {
                     ARRAY_STORAGE.update(resume);
                     printAll();
                     break;
-                case "get":
+                case "getInstance":
                     System.out.println(ARRAY_STORAGE.get(uuid));
                     break;
                 case "clear":

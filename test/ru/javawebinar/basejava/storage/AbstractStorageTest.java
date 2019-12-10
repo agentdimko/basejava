@@ -2,12 +2,12 @@ package ru.javawebinar.basejava.storage;
 
 import org.junit.Before;
 import org.junit.Test;
+import ru.javawebinar.basejava.Config;
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
-import ru.javawebinar.basejava.model.*;
+import ru.javawebinar.basejava.model.Resume;
 
 import java.io.File;
-import java.time.Month;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public abstract class AbstractStorageTest {
-    protected static File STORAGE_DIR = new File("storage");
+    protected static File STORAGE_DIR = Config.getInstance().getStorageDir();
 
     private static final String UUID_1 = "uuid1";
     private static final String UUID_2 = "uuid2";
@@ -35,29 +35,29 @@ public abstract class AbstractStorageTest {
         RESUME_3 = new Resume(UUID_3, "Name3");
         DUMMY_RESUME = new Resume(DUMMY, "Name4");
 
-        RESUME_1.addContact(ContactType.EMAIL, "mail1@ya.ru");
-        RESUME_1.addContact(ContactType.PHONE, "11111");
-        RESUME_1.addSection(SectionType.OBJECTIVE, new TextSection("Objective1"));
-        RESUME_1.addSection(SectionType.PERSONAL, new TextSection("Personal data"));
-        RESUME_1.addSection(SectionType.ACHIEVEMENT, new ListSection("Achivment11", "Achivment12", "Achivment13"));
-        RESUME_1.addSection(SectionType.QUALIFICATIONS, new ListSection("Java", "SQL", "JavaScript"));
-        RESUME_1.addSection(SectionType.EXPERIENCE,
-                new InstitutionSection(
-                        new Institution("Institution11", "http://Institution11.ru",
-                                new Institution.Position(2005, Month.JANUARY, "position1", "content1"),
-                                new Institution.Position(2001, Month.MARCH, 2005, Month.JANUARY, "position2", "content2"))));
-        RESUME_1.addSection(SectionType.EDUCATION,
-                new InstitutionSection(
-                        new Institution("Institute", null,
-                                new Institution.Position(1996, Month.JANUARY, 2000, Month.DECEMBER, "aspirant", null),
-                                new Institution.Position(2001, Month.MARCH, 2005, Month.JANUARY, "student", "IT facultet")),
-                        new Institution("Institution12", "http://Institution12.ru")));
-        RESUME_2.addContact(ContactType.SKYPE, "skype2");
-        RESUME_2.addContact(ContactType.PHONE, "22222");
-        RESUME_2.addSection(SectionType.EXPERIENCE,
-                new InstitutionSection(
-                        new Institution("Institution2", "http://Institution2.ru",
-                                new Institution.Position(2015, Month.JANUARY, "position1", "content1"))));
+//        RESUME_1.addContact(ContactType.EMAIL, "mail1@ya.ru");
+//        RESUME_1.addContact(ContactType.PHONE, "11111");
+//        RESUME_1.addSection(SectionType.OBJECTIVE, new TextSection("Objective1"));
+//        RESUME_1.addSection(SectionType.PERSONAL, new TextSection("Personal data"));
+//        RESUME_1.addSection(SectionType.ACHIEVEMENT, new ListSection("Achivment11", "Achivment12", "Achivment13"));
+//        RESUME_1.addSection(SectionType.QUALIFICATIONS, new ListSection("Java", "SQL", "JavaScript"));
+//        RESUME_1.addSection(SectionType.EXPERIENCE,
+//                new InstitutionSection(
+//                        new Institution("Institution11", "http://Institution11.ru",
+//                                new Institution.Position(2005, Month.JANUARY, "position1", "content1"),
+//                                new Institution.Position(2001, Month.MARCH, 2005, Month.JANUARY, "position2", "content2"))));
+//        RESUME_1.addSection(SectionType.EDUCATION,
+//                new InstitutionSection(
+//                        new Institution("Institute", null,
+//                                new Institution.Position(1996, Month.JANUARY, 2000, Month.DECEMBER, "aspirant", null),
+//                                new Institution.Position(2001, Month.MARCH, 2005, Month.JANUARY, "student", "IT facultet")),
+//                        new Institution("Institution12", "http://Institution12.ru")));
+//        RESUME_2.addContact(ContactType.SKYPE, "skype2");
+//        RESUME_2.addContact(ContactType.PHONE, "22222");
+//        RESUME_2.addSection(SectionType.EXPERIENCE,
+//                new InstitutionSection(
+//                        new Institution("Institution2", "http://Institution2.ru",
+//                                new Institution.Position(2015, Month.JANUARY, "position1", "content1"))));
     }
 
 
