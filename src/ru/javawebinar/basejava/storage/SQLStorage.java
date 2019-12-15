@@ -19,7 +19,6 @@ public class SQLStorage implements Storage {
         sqlHelper = new SqlHelper(() -> DriverManager.getConnection(dbUrl, dbUser, dbPassword));
     }
 
-    //готово
     @Override
     public void clear() {
         sqlHelper.execute("DELETE FROM resume");
@@ -27,6 +26,31 @@ public class SQLStorage implements Storage {
 
     @Override
     public void update(Resume resume) {
+        sqlHelper.transactionalExecute(conn -> {
+            try (PreparedStatement ps = conn.prepareStatement("UPDATE resume SET full_name=? WHERE uuid=?")) {
+                ps.setString(1, resume.getFullName());
+                ps.setString(2, resume.getUuid());
+                ps.execute();
+            }
+            if (!(resume.getContacts().size() == 0)) {
+                try (PreparedStatement ps = conn.prepareStatement("UPDATE contact SET type=?, value=? WHERE uuid=?")) {
+                    for (Map.Entry<ContactType, String> e : resume.getContacts().entrySet()) {
+                        ps.setString(1, e.getKey().name());
+                        ps.setString(2, e.getValue());
+                        ps.setString(3, resume.getUuid());
+                        ps.addBatch();
+                    }
+                    ps.executeBatch();
+                }
+            } else {
+                try (PreparedStatement ps = conn.prepareStatement("Delete FROM contact WHERE uuid=?")) {
+                    ps.setString(1, resume.getUuid());
+                    ps.execute();
+                }
+            }
+            return null;
+        });
+
         sqlHelper.execute("UPDATE resume SET full_name=? WHERE uuid=?", (ps) -> {
             ps.setString(1, resume.getFullName());
             ps.setString(2, resume.getUuid());
@@ -37,7 +61,6 @@ public class SQLStorage implements Storage {
         });
     }
 
-    //готово
     @Override
     public void save(Resume resume) {
         sqlHelper.transactionalExecute(conn -> {
@@ -62,7 +85,6 @@ public class SQLStorage implements Storage {
         );
     }
 
-    //Готово
     @Override
     public Resume get(String uuid) {
         return sqlHelper.execute("SELECT r.uuid, r.full_name, c.type, c.value FROM resume r\n" +
@@ -77,6 +99,9 @@ public class SQLStorage implements Storage {
             Resume resume = new Resume(uuid, rs.getString("full_name"));
             do {
                 String value = rs.getString("value");
+                if (value == null) {
+                    break;
+                }
                 ContactType type = ContactType.valueOf(rs.getString("type"));
                 resume.addContact(type, value);
             } while (rs.next());
@@ -84,8 +109,6 @@ public class SQLStorage implements Storage {
         });
     }
 
-
-    //Готово
     @Override
     public void delete(String uuid) {
         sqlHelper.execute("DELETE FROM resume WHERE uuid = ?", (ps) -> {
@@ -99,17 +122,42 @@ public class SQLStorage implements Storage {
 
     @Override
     public List<Resume> getAllSorted() {
-
-        return sqlHelper.execute("SELECT * FROM resume ORDER BY full_name, uuid", (ps) -> {
-            List<Resume> list = new ArrayList<>();
+        return sqlHelper.execute("SELECT r.uuid, r.full_name, c.type, c.value FROM resume r\n" +
+                "LEFT JOIN contact c\n" +
+                "ON r.uuid = c.resume_uuid\n" +
+                "ORDER BY r.full_name, r.uuid", (ps -> {
             ResultSet rs = ps.executeQuery();
+
+            List<Resume> list = new ArrayList<>();
+            String uuid = null;
+            Resume resume = null;
+
             while (rs.next()) {
-                String uuid = rs.getString("uuid");
-                String fullName = rs.getString("full_name");
-                list.add(new Resume(uuid, fullName));
+                String uuidFromQuery = rs.getString("uuid");
+                String value = rs.getString("value");
+
+                if (!uuidFromQuery.equals(uuid) && resume != null) {
+                    list.add(resume);
+                }
+
+                if (uuidFromQuery.equals(uuid)) {
+                    if (value == null) {
+                        list.add(resume);
+                    } else {
+                        resume.addContact(ContactType.valueOf(rs.getString("type")), value);
+                    }
+                } else {
+                    uuid = uuidFromQuery;
+                    resume = new Resume(uuid, rs.getString("full_name"));
+                    if (value == null) {
+                        list.add(resume);
+                    } else {
+                        resume.addContact(ContactType.valueOf(rs.getString("type")), value);
+                    }
+                }
             }
             return list;
-        });
+        }));
     }
 
 
