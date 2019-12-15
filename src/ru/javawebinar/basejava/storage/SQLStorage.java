@@ -33,7 +33,7 @@ public class SQLStorage implements Storage {
                 ps.execute();
             }
             if (!(resume.getContacts().size() == 0)) {
-                try (PreparedStatement ps = conn.prepareStatement("UPDATE contact SET type=?, value=? WHERE uuid=?")) {
+                try (PreparedStatement ps = conn.prepareStatement("UPDATE contact SET type=?, value=? WHERE resume_uuid=?")) {
                     for (Map.Entry<ContactType, String> e : resume.getContacts().entrySet()) {
                         ps.setString(1, e.getKey().name());
                         ps.setString(2, e.getValue());
@@ -43,7 +43,7 @@ public class SQLStorage implements Storage {
                     ps.executeBatch();
                 }
             } else {
-                try (PreparedStatement ps = conn.prepareStatement("Delete FROM contact WHERE uuid=?")) {
+                try (PreparedStatement ps = conn.prepareStatement("Delete FROM contact WHERE resume_uuid=?")) {
                     ps.setString(1, resume.getUuid());
                     ps.execute();
                 }
