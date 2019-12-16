@@ -118,6 +118,7 @@ public class SQLStorage implements Storage {
             ResultSet rs = ps.executeQuery();
             Map<String, Resume> map = new HashMap<>();
             Resume resume = null;
+
             while (rs.next()) {
                 String uuid = rs.getString("uuid");
                 String fullName = rs.getString("full_name");
@@ -125,12 +126,10 @@ public class SQLStorage implements Storage {
                 String value = rs.getString("value");
 
                 if (map.containsKey(uuid)) {
-                    if (type != null)
-                        resume.addContact(ContactType.valueOf(type), value);
+                    checkContact(resume, type, value);
                 } else {
                     resume = new Resume(uuid, fullName);
-                    if (type != null)
-                        resume.addContact(ContactType.valueOf(type), value);
+                    checkContact(resume, type, value);
                 }
                 map.put(uuid, resume);
             }
@@ -138,6 +137,7 @@ public class SQLStorage implements Storage {
             return map.values().stream().sorted().collect(Collectors.toList());
         }));
     }
+
 
     @Override
     public int size() {
@@ -165,11 +165,8 @@ public class SQLStorage implements Storage {
         }
     }
 
-    private void checkContact(ResultSet rs, List<Resume> list, Resume resume) throws SQLException {
-        if (rs.getString("value") == null) {
-            list.add(resume);
-        } else {
-            resume.addContact(ContactType.valueOf(rs.getString("type")), rs.getString("value"));
-        }
+    private void checkContact(Resume resume, String type, String value) {
+        if (type != null)
+            resume.addContact(ContactType.valueOf(type), value);
     }
 }
