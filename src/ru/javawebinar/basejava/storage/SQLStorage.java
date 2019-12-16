@@ -30,8 +30,12 @@ public class SQLStorage implements Storage {
         sqlHelper.transactionalExecute(conn -> {
             try (PreparedStatement ps = conn.prepareStatement("UPDATE resume SET full_name=? WHERE uuid=?")) {
                 processResume(resume, ps);
+                if (ps.executeUpdate() == 0) {
+                    throw new NotExistStorageException(resume.getUuid());
+                }
             }
-            if (!(resume.getContacts().size() == 0)) {
+
+            if (resume.getContacts().size() != 0) {
                 try (PreparedStatement ps = conn.prepareStatement("UPDATE contact SET type=?, value=? WHERE resume_uuid=?")) {
                     processContact(resume, ps);
                 }
@@ -40,14 +44,6 @@ public class SQLStorage implements Storage {
                     ps.setString(1, resume.getUuid());
                     ps.execute();
                 }
-            }
-            return null;
-        });
-
-        sqlHelper.execute("UPDATE resume SET full_name=? WHERE uuid=?", (ps) -> {
-            setResumeParameters(resume, ps);
-            if (ps.executeUpdate() == 0) {
-                throw new NotExistStorageException(resume.getUuid());
             }
             return null;
         });
@@ -109,7 +105,6 @@ public class SQLStorage implements Storage {
             if (ps.executeUpdate() == 0) {
                 throw new NotExistStorageException(uuid);
             }
-
             return null;
         });
     }
@@ -165,13 +160,11 @@ public class SQLStorage implements Storage {
     }
 
     private void processResume(Resume resume, PreparedStatement ps) throws SQLException {
-        setResumeParameters(resume, ps);
-        ps.execute();
-    }
-
-    private void setResumeParameters(Resume resume, PreparedStatement ps) throws SQLException {
         ps.setString(1, resume.getFullName());
         ps.setString(2, resume.getUuid());
+        if (ps.executeUpdate() == 0) {
+            throw new NotExistStorageException(resume.getUuid());
+        }
     }
 
     private void checkContact(ResultSet rs, List<Resume> list, Resume resume) throws SQLException {
