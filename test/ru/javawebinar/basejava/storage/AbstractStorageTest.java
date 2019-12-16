@@ -55,14 +55,13 @@ public abstract class AbstractStorageTest {
 //                                new Institution.Position(1996, Month.JANUARY, 2000, Month.DECEMBER, "aspirant", null),
 //                                new Institution.Position(2001, Month.MARCH, 2005, Month.JANUARY, "student", "IT facultet")),
 //                        new Institution("Institution12", "http://Institution12.ru")));
-        RESUME_2.addContact(ContactType.SKYPE, "skype2");
-        RESUME_2.addContact(ContactType.PHONE, "22222");
+        RESUME_3.addContact(ContactType.SKYPE, "skype2");
+        RESUME_3.addContact(ContactType.PHONE, "22222");
 //        RESUME_2.addSection(SectionType.EXPERIENCE,
 //                new InstitutionSection(
 //                        new Institution("Institution2", "http://Institution2.ru",
 //                                new Institution.Position(2015, Month.JANUARY, "position1", "content1"))));
     }
-
 
     protected AbstractStorageTest(Storage storage) {
         this.storage = storage;

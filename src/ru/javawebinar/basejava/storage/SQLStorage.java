@@ -9,9 +9,10 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class SQLStorage implements Storage {
     private SqlHelper sqlHelper;
@@ -113,33 +114,30 @@ public class SQLStorage implements Storage {
     public List<Resume> getAllSorted() {
         return sqlHelper.execute("SELECT r.uuid, r.full_name, c.type, c.value FROM resume r\n" +
                 "LEFT JOIN contact c\n" +
-                "ON r.uuid = c.resume_uuid\n" +
-                "ORDER BY r.full_name, r.uuid", (ps -> {
+                "ON r.uuid = c.resume_uuid\n", (ps -> {
             ResultSet rs = ps.executeQuery();
-
-            List<Resume> list = new ArrayList<>();
-            String uuid = null;
+            Map<String, Resume> map = new HashMap<>();
             Resume resume = null;
-
             while (rs.next()) {
-                String uuidFromQuery = rs.getString("uuid");
+                String uuid = rs.getString("uuid");
+                String fullName = rs.getString("full_name");
+                String type = rs.getString("type");
+                String value = rs.getString("value");
 
-                if (!uuidFromQuery.equals(uuid) && resume != null) {
-                    list.add(resume);
-                }
-
-                if (uuidFromQuery.equals(uuid)) {
-                    checkContact(rs, list, resume);
+                if (map.containsKey(uuid)) {
+                    if (type != null)
+                        resume.addContact(ContactType.valueOf(type), value);
                 } else {
-                    uuid = uuidFromQuery;
-                    resume = new Resume(uuid, rs.getString("full_name"));
-                    checkContact(rs, list, resume);
+                    resume = new Resume(uuid, fullName);
+                    if (type != null)
+                        resume.addContact(ContactType.valueOf(type), value);
                 }
+                map.put(uuid, resume);
             }
-            return list;
+//          https://www.mkyong.com/java8/java-8-convert-map-to-list/
+            return map.values().stream().sorted().collect(Collectors.toList());
         }));
     }
-
 
     @Override
     public int size() {
