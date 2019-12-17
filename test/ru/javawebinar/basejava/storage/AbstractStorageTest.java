@@ -11,6 +11,7 @@ import ru.javawebinar.basejava.model.Resume;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -19,15 +20,10 @@ public abstract class AbstractStorageTest {
     protected static File STORAGE_DIR = Config.getInstance().getStorageDir();
 
     //https://www.baeldung.com/java-uuid
-//    private static final String UUID_1 = UUID.randomUUID().toString();
-//    private static final String UUID_2 = UUID.randomUUID().toString();
-//    private static final String UUID_3 = UUID.randomUUID().toString();
-//    private static final String DUMMY = UUID.randomUUID().toString();
-
-    private static final String UUID_1 = "9266be7d-f269-4094-a180-205259146ceb";
-    private static final String UUID_2 = "bdc6be7d-f269-4094-a180-205259146ceb";
-    private static final String UUID_3 = "330dea91-8c3c-4b2c-a3da-35780e988f89";
-    private static final String DUMMY = "421dea91-8c3c-4b2c-a3da-35780e988f89";
+    private static final String UUID_1 = UUID.randomUUID().toString();
+    private static final String UUID_2 = UUID.randomUUID().toString();
+    private static final String UUID_3 = UUID.randomUUID().toString();
+    private static final String DUMMY = UUID.randomUUID().toString();
 
     private static final Resume RESUME_1;
     private static final Resume RESUME_2;
@@ -90,33 +86,7 @@ public abstract class AbstractStorageTest {
         Resume newResume = new Resume(UUID_1, "New Name");
         storage.update(newResume);
         assertTrue(newResume.equals(storage.get(UUID_1)));
-
-
-        newResume.addContact(ContactType.SKYPE, "myskype");
-        newResume.addContact(ContactType.EMAIL, "mymail@mail.ru");
-        storage.update(newResume);
-        assertTrue(newResume.equals(storage.get(UUID_1)));
-
-
-        newResume = new Resume(UUID_1, "New Name");
-        newResume.addContact(ContactType.PHONE, "12345678");
-        storage.update(newResume);
-        assertTrue(newResume.equals(storage.get(UUID_1)));
-
-
-        newResume = new Resume(UUID_1, "New Name");
-        storage.update(newResume);
-        assertTrue(newResume.equals(storage.get(UUID_1)));
-        System.out.println("step4");
-
     }
-
-//    @Test
-//    public void updateExist() throws Exception {
-//        Resume newResume = new Resume(UUID_1, "New Name");
-//        storage.update(newResume);
-//        assertTrue(newResume.equals(storage.get(UUID_1)));
-//    }
 
     @Test(expected = NotExistStorageException.class)
     public void updateNotExist() {
