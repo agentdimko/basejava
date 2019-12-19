@@ -27,7 +27,11 @@ public class SQLStorage implements Storage {
     public void update(Resume resume) {
         sqlHelper.transactionalExecute(conn -> {
             try (PreparedStatement ps = conn.prepareStatement("UPDATE resume SET full_name=? WHERE uuid=?")) {
-                insertResume(resume, ps);
+                ps.setString(1, resume.getFullName());
+                ps.setString(2, resume.getUuid());
+                if (ps.executeUpdate() == 0) {
+                    throw new NotExistStorageException(resume.getUuid());
+                }
 
             }
             try (PreparedStatement ps = conn.prepareStatement("Delete FROM contact WHERE resume_uuid=?")) {
@@ -45,7 +49,9 @@ public class SQLStorage implements Storage {
     public void save(Resume resume) {
         sqlHelper.transactionalExecute(conn -> {
             try (PreparedStatement ps = conn.prepareStatement("INSERT INTO resume ( full_name, uuid) VALUES (?,?)")) {
-                insertResume(resume, ps);
+                ps.setString(1, resume.getFullName());
+                ps.setString(2, resume.getUuid());
+                ps.execute();
             }
             insertContact(resume, conn);
             return null;
@@ -115,14 +121,6 @@ public class SQLStorage implements Storage {
                 ps.addBatch();
             }
             ps.executeBatch();
-        }
-    }
-
-    private void insertResume(Resume resume, PreparedStatement ps) throws SQLException {
-        ps.setString(1, resume.getFullName());
-        ps.setString(2, resume.getUuid());
-        if (ps.executeUpdate() == 0) {
-            throw new NotExistStorageException(resume.getUuid());
         }
     }
 
