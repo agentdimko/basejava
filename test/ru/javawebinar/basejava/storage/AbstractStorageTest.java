@@ -5,8 +5,7 @@ import org.junit.Test;
 import ru.javawebinar.basejava.Config;
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
-import ru.javawebinar.basejava.model.ContactType;
-import ru.javawebinar.basejava.model.Resume;
+import ru.javawebinar.basejava.model.*;
 
 import java.io.File;
 import java.util.Arrays;
@@ -44,10 +43,10 @@ public abstract class AbstractStorageTest {
 
         RESUME_1.addContact(ContactType.EMAIL, "mail1@ya.ru");
         RESUME_1.addContact(ContactType.PHONE, "11111");
-//        RESUME_1.addSection(SectionType.OBJECTIVE, new TextSection("Objective1"));
-//        RESUME_1.addSection(SectionType.PERSONAL, new TextSection("Personal data"));
-//        RESUME_1.addSection(SectionType.ACHIEVEMENT, new ListSection("Achivment11", "Achivment12", "Achivment13"));
-//        RESUME_1.addSection(SectionType.QUALIFICATIONS, new ListSection("Java", "SQL", "JavaScript"));
+        RESUME_1.addSection(SectionType.OBJECTIVE, new TextSection("Objective1"));
+        RESUME_1.addSection(SectionType.PERSONAL, new TextSection("Personal data"));
+        RESUME_1.addSection(SectionType.ACHIEVEMENT, new ListSection("Achivment11", "Achivment12", "Achivment13"));
+        RESUME_1.addSection(SectionType.QUALIFICATIONS, new ListSection("Java", "SQL", "JavaScript"));
 //        RESUME_1.addSection(SectionType.EXPERIENCE,
 //                new InstitutionSection(
 //                        new Institution("Institution11", "http://Institution11.ru",
@@ -97,12 +96,10 @@ public abstract class AbstractStorageTest {
         storage.update(newResume);
         assertTrue(newResume.equals(storage.get(UUID_1)));
 
-
         newResume = new Resume(UUID_1, "New Name");
         newResume.addContact(ContactType.PHONE, "12345678");
         storage.update(newResume);
         assertTrue(newResume.equals(storage.get(UUID_1)));
-
 
         newResume = new Resume(UUID_1, "New Name");
         storage.update(newResume);

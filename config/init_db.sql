@@ -13,3 +13,24 @@ CREATE TABLE contact
 );
 CREATE UNIQUE INDEX contact_uuid_type_index
   ON contact (resume_uuid, type);
+
+
+CREATE TABLE public.textsection
+(
+  id          integer                                    NOT NULL DEFAULT nextval('textsection_id_seq'::regclass),
+  type        text COLLATE pg_catalog."default"          NOT NULL,
+  value       text COLLATE pg_catalog."default"          NOT NULL,
+  resume_uuid character(36) COLLATE pg_catalog."default" NOT NULL,
+  CONSTRAINT textsection_pkey PRIMARY KEY (id),
+  CONSTRAINT textsection_resume_fk FOREIGN KEY (resume_uuid)
+    REFERENCES public.resume (uuid) MATCH SIMPLE
+    ON UPDATE RESTRICT
+    ON DELETE CASCADE
+)
+  WITH (
+    OIDS = FALSE
+  )
+  TABLESPACE pg_default;
+
+ALTER TABLE public.textsection
+  OWNER to postgres;
