@@ -100,6 +100,7 @@ public class Resume implements Comparable<Resume>, Serializable {
                 '}';
     }
 
+
     @Override
     public int compareTo(Resume o) {
         int i = fullName.compareTo(o.fullName);

@@ -104,8 +104,6 @@ public abstract class AbstractStorageTest {
         newResume = new Resume(UUID_1, "New Name");
         storage.update(newResume);
         assertTrue(newResume.equals(storage.get(UUID_1)));
-        System.out.println("step4");
-
     }
 
 //    @Test
