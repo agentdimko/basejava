@@ -115,7 +115,6 @@ public class SQLStorage implements Storage {
                 while (rs.next()) {
                     String uuid = rs.getString("resume_uuid");
                     String type = rs.getString("type");
-                    Resume resume = map.get(uuid);
                     checkContactValue(rs, map.get(uuid));
                 }
             }
