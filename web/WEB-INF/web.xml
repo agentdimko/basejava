@@ -8,18 +8,9 @@
         <servlet-class>ru.javawebinar.basejava.web.ResumeServlet</servlet-class>
     </servlet>
 
-    <servlet>
-        <servlet-name>allResumesServlet</servlet-name>
-        <servlet-class>ru.javawebinar.basejava.web.AllResumesServlet</servlet-class>
-    </servlet>
-
     <servlet-mapping>
         <servlet-name>resumeServlet</servlet-name>
         <url-pattern>/resume</url-pattern>
     </servlet-mapping>
 
-    <servlet-mapping>
-        <servlet-name>allResumesServlet</servlet-name>
-        <url-pattern>/allresumes</url-pattern>
-    </servlet-mapping>
 </web-app>
