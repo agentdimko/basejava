@@ -1,8 +1,7 @@
 package ru.javawebinar.basejava.web;
 
 import ru.javawebinar.basejava.Config;
-import ru.javawebinar.basejava.model.ContactType;
-import ru.javawebinar.basejava.model.Resume;
+import ru.javawebinar.basejava.model.*;
 import ru.javawebinar.basejava.storage.Storage;
 
 import javax.servlet.ServletConfig;
@@ -34,6 +33,20 @@ public class ResumeServlet extends HttpServlet {
                 r.addContact(type, value);
             } else {
                 r.getContacts().remove(type);
+            }
+        }
+        for (SectionType type : SectionType.values()) {
+            switch (type.toString()) {
+                case "OBJECTIVE":
+                case "PERSONAL":
+                    r.addSection(type, new TextSection(request.getParameter(type.name())));
+                    break;
+                case "ACHIEVEMENT":
+                case "QUALIFICATIONS":
+                    r.addSection(type, new ListSection(request.getParameter(type.name())));
+                    break;
+                default:
+                    break;
             }
         }
         storage.update(r);

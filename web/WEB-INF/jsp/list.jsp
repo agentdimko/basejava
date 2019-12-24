@@ -30,6 +30,7 @@
                 <td><a href="resume?uuid=${resume.uuid}&action=edit"><img src="img/pencil.png"></a></td>
             </tr>
         </c:forEach>
+
     </table>
 </section>
 <jsp:include page="fragments/footer.jsp"/>
