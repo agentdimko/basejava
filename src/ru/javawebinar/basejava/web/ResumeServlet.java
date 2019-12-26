@@ -25,8 +25,14 @@ public class ResumeServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         String uuid = request.getParameter("uuid");
         String fullName = request.getParameter("fullName");
-        Resume r = storage.get(uuid);
-        r.setFullName(fullName);
+        Resume r;
+        if (request.getParameter("dummy").equals("dummy")) {
+            r = new Resume(uuid, fullName);
+        } else {
+            r = storage.get(uuid);
+            r.setFullName(fullName);
+        }
+
         for (ContactType type : ContactType.values()) {
             String value = request.getParameter(type.name());
             if (value != null && value.trim().length() != 0) {
@@ -35,6 +41,7 @@ public class ResumeServlet extends HttpServlet {
                 r.getContacts().remove(type);
             }
         }
+
         for (SectionType type : SectionType.values()) {
             switch (type.toString()) {
                 case "OBJECTIVE":
@@ -49,11 +56,23 @@ public class ResumeServlet extends HttpServlet {
                     break;
             }
         }
-        storage.update(r);
+
+        if (request.getParameter("dummy").equals("dummy")) {
+            storage.save(r);
+        } else {
+            storage.update(r);
+        }
         response.sendRedirect("resume");
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws javax.servlet.ServletException, IOException {
+        if (request.getParameter("addresume") != null) {
+            Resume resume = new Resume("dummy");
+            request.setAttribute("resume", resume);
+            request.setAttribute("addresume", "yes");
+            request.getRequestDispatcher("/WEB-INF/jsp/edit.jsp").forward(request, response);
+            return;
+        }
         String uuid = request.getParameter("uuid");
         String action = request.getParameter("action");
         if (action == null) {
