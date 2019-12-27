@@ -30,11 +30,6 @@
                 <td><a href="resume?uuid=${resume.uuid}&action=edit"><img src="img/pencil.png"></a></td>
             </tr>
         </c:forEach>
-        <%--<tr>--%>
-        <%--<td style="colspan:4">--%>
-        <%----%>
-        <%--</td>--%>
-        <%--</tr>--%>
     </table>
 </section>
 <section>

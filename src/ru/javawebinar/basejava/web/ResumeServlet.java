@@ -69,7 +69,6 @@ public class ResumeServlet extends HttpServlet {
         if (request.getParameter("addresume") != null) {
             Resume resume = new Resume("dummy");
             request.setAttribute("resume", resume);
-            request.setAttribute("addresume", "yes");
             request.getRequestDispatcher("/WEB-INF/jsp/edit.jsp").forward(request, response);
             return;
         }

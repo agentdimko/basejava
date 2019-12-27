@@ -160,9 +160,6 @@ public class SQLStorage implements Storage {
     }
 
     private void insertSections(Resume resume, Connection conn) throws SQLException {
-        if (resume.getSections().size() == 0) {
-            return;
-        }
         try (PreparedStatement ps = conn.prepareStatement("INSERT INTO section (type, value, resume_uuid) "
                 + "VALUES (?, ?, ?)")) {
             for (Map.Entry<SectionType, Section> e : resume.getSections().entrySet()) {

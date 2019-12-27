@@ -22,7 +22,7 @@
                          type="java.util.Map.Entry<ru.javawebinar.basejava.model.SectionType, ru.javawebinar.basejava.model.Section>"/>
                 <%=sectionEntry.getKey().getTitle()%>&nbsp;<%=sectionEntry.getValue()%><br/>
         </c:forEach>
-    <p>
+    </p>
 </section>
 <jsp:include page="fragments/footer.jsp"/>
 </body>
