@@ -72,6 +72,10 @@ public class Institution implements Serializable {
                 '}';
     }
 
+    public String toString2() {
+        return "";
+    }
+
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class Position implements Serializable {
         @XmlJavaTypeAdapter(LocalDateAdapter.class)

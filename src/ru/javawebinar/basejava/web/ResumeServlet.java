@@ -26,8 +26,9 @@ public class ResumeServlet extends HttpServlet {
         String uuid = request.getParameter("uuid");
         String fullName = request.getParameter("fullName");
         Resume r;
-        if (request.getParameter("dummy").equals("dummy")) {
-            r = new Resume(uuid, fullName);
+
+        if (uuid.isEmpty()) {
+            r = new Resume(fullName);
         } else {
             r = storage.get(uuid);
             r.setFullName(fullName);
@@ -43,21 +44,36 @@ public class ResumeServlet extends HttpServlet {
         }
 
         for (SectionType type : SectionType.values()) {
-            switch (type.toString()) {
-                case "OBJECTIVE":
-                case "PERSONAL":
+            String value = request.getParameter(type.name());
+            if (value == null || value.trim().length() == 0) {
+                r.getSections().remove(type);
+                continue;
+            }
+            switch (type) {
+                case OBJECTIVE:
+                case PERSONAL:
                     r.addSection(type, new TextSection(request.getParameter(type.name())));
+//                    processSection(value, r, type, new TextSection(request.getParameter(type.name())));
                     break;
-                case "ACHIEVEMENT":
-                case "QUALIFICATIONS":
-                    r.addSection(type, new ListSection(request.getParameter(type.name())));
+                case ACHIEVEMENT:
+                case QUALIFICATIONS:
+                    value = value.replace("\r", ",").replace("\n", "");
+                    int length = value.length();
+                    if (value.charAt(length - 1) == ',') {
+                        value = value.substring(0, length - 1);
+                    }
+                    r.addSection(type, new ListSection(value.split(",")));
+//                    processSection(value, r, type, new ListSection(value.split(",")));
+                    break;
+                case EXPERIENCE:
+                case EDUCATION:
                     break;
                 default:
                     break;
             }
         }
 
-        if (request.getParameter("dummy").equals("dummy")) {
+        if (uuid.isEmpty()) {
             storage.save(r);
         } else {
             storage.update(r);
@@ -66,12 +82,6 @@ public class ResumeServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws javax.servlet.ServletException, IOException {
-        if (request.getParameter("addresume") != null) {
-            Resume resume = new Resume("dummy");
-            request.setAttribute("resume", resume);
-            request.getRequestDispatcher("/WEB-INF/jsp/edit.jsp").forward(request, response);
-            return;
-        }
         String uuid = request.getParameter("uuid");
         String action = request.getParameter("action");
         if (action == null) {
@@ -81,6 +91,12 @@ public class ResumeServlet extends HttpServlet {
         }
         Resume r;
         switch (action) {
+            case "add":
+                r = new Resume();
+                request.setAttribute("resume", r);
+                request.setAttribute("isNew", true);
+                request.getRequestDispatcher("/WEB-INF/jsp/edit.jsp").forward(request, response);
+                return;
             case "delete":
                 storage.delete(uuid);
                 response.sendRedirect("resume");
@@ -93,8 +109,17 @@ public class ResumeServlet extends HttpServlet {
                 throw new IllegalArgumentException("Action " + action + " is illegal");
         }
         request.setAttribute("resume", r);
+        request.setAttribute("isNew", false);
         request.getRequestDispatcher(
                 ("view".equals(action) ? "/WEB-INF/jsp/view.jsp" : "/WEB-INF/jsp/edit.jsp")
         ).forward(request, response);
     }
+
+//    private void processSection(String value, Resume r, SectionType type, Section section) {
+//        if (value != null && value.trim().length() != 0) {
+//            r.addSection(type, section);
+//        } else {
+//            r.getSections().remove(type);
+//        }
+//    }
 }

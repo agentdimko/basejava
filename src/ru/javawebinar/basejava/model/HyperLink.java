@@ -17,7 +17,7 @@ public class HyperLink implements Serializable {
     }
 
     public HyperLink(String link, String text) {
-        checkText(text, "");
+        checkText(text);
         this.text = text;
         this.link = link;
     }
@@ -32,8 +32,10 @@ public class HyperLink implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         HyperLink that = (HyperLink) o;
         return Objects.equals(link, that.link) &&
                 text.equals(that.text);
@@ -44,12 +46,20 @@ public class HyperLink implements Serializable {
         return Objects.hash(link, text);
     }
 
+    //    @Override
+//    public String toString() {
+//        return link + ", " + text;
+//    }
     @Override
     public String toString() {
-        return link + ", " + text;
+        String result = text;
+        if (link != null && link.trim().length() != 0) {
+            result = "<a href=\"" + link + "\">" + text + "</a>";
+        }
+        return result;
     }
 
-    private static void checkText(String fullName, String uuid) {
+    private static void checkText(String fullName) {
         if (fullName == null || fullName.trim().isEmpty()) {
             throw new RuntimeException("Missing text description");
         }

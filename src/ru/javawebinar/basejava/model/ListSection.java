@@ -40,7 +40,10 @@ public class ListSection extends Section {
 
     @Override
     public String toString() {
-        return String.join(",", items);
-
+        StringBuilder sb = new StringBuilder();
+        for (String item : items) {
+            sb.append(item.trim()).append("\n");
+        }
+        return sb.toString();
     }
 }

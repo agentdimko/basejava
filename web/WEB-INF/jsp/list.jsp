@@ -34,7 +34,7 @@
 </section>
 <section>
     <form class="form" action="resume" method="get">
-        <input type="submit" name="addresume" value="Добавить резюме"/>
+        <input type="submit" name="action" value="add"/>
     </form>
 </section>
 
